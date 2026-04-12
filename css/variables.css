@@ -1,0 +1,95 @@
+/* ========================================
+   StadiumPulse — Design Tokens
+   ======================================== */
+
+:root {
+    /* Primary Palette */
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #0f1428;
+    --bg-tertiary: #141a2e;
+    --bg-card: rgba(15, 20, 40, 0.7);
+    --bg-card-hover: rgba(20, 26, 46, 0.85);
+
+    /* Accent Colors */
+    --accent-blue: #00d4ff;
+    --accent-green: #00ff88;
+    --accent-amber: #ffaa00;
+    --accent-red: #ff3b5c;
+    --accent-purple: #a855f7;
+    --accent-cyan: #06b6d4;
+
+    /* Glow variants */
+    --glow-blue: 0 0 20px rgba(0, 212, 255, 0.3);
+    --glow-green: 0 0 20px rgba(0, 255, 136, 0.3);
+    --glow-amber: 0 0 20px rgba(255, 170, 0, 0.3);
+    --glow-red: 0 0 20px rgba(255, 59, 92, 0.3);
+
+    /* Text */
+    --text-primary: #e8eaf0;
+    --text-secondary: #8b92a8;
+    --text-muted: #5a6178;
+    --text-accent: var(--accent-blue);
+
+    /* Glass */
+    --glass-bg: rgba(15, 20, 40, 0.6);
+    --glass-border: rgba(0, 212, 255, 0.12);
+    --glass-blur: 16px;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    /* Borders */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-accent: rgba(0, 212, 255, 0.25);
+
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    /* Font */
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Orbitron', monospace;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* Z-index layers */
+    --z-base: 1;
+    --z-dropdown: 100;
+    --z-navbar: 500;
+    --z-modal: 1000;
+    --z-toast: 1100;
+
+    /* Navbar */
+    --navbar-height: 64px;
+    --tabbar-height: 52px;
+}
+
+/* High Contrast Accessibility Mode */
+[data-theme="high-contrast"] {
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #111111;
+    --bg-card: rgba(10, 10, 10, 0.95);
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-muted: #999999;
+    --accent-blue: #00e5ff;
+    --accent-green: #00ff99;
+    --accent-amber: #ffcc00;
+    --accent-red: #ff4466;
+    --glass-bg: rgba(0, 0, 0, 0.9);
+    --glass-border: rgba(0, 229, 255, 0.3);
+    --border-subtle: rgba(255, 255, 255, 0.15);
+}

@@ -1,0 +1,345 @@
+/* ========================================
+   StadiumPulse — Loading Screen
+   ======================================== */
+
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    overflow: hidden;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loading-screen.fade-out {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+}
+
+/* ---- Background floating orbs ---- */
+.loader-bg-effects {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.loader-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: orbFloat 8s ease-in-out infinite;
+}
+.loader-orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.3), transparent 70%);
+    top: -10%;
+    left: -5%;
+    animation-delay: 0s;
+}
+.loader-orb-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.25), transparent 70%);
+    bottom: -10%;
+    right: -5%;
+    animation-delay: -3s;
+}
+.loader-orb-3 {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.2), transparent 70%);
+    top: 50%;
+    left: 60%;
+    animation-delay: -5s;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.1); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+/* ---- Main content ---- */
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    z-index: 2;
+    animation: loaderContentIn 0.8s ease-out;
+}
+
+@keyframes loaderContentIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Stadium Rings ---- */
+.loader-stadium {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stadium-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+
+.ring-1 {
+    width: 180px;
+    height: 180px;
+    border-color: rgba(0, 212, 255, 0.15);
+    border-top-color: rgba(0, 212, 255, 0.8);
+    animation: spinRing 2.5s linear infinite;
+}
+.ring-2 {
+    width: 148px;
+    height: 148px;
+    border-color: rgba(0, 255, 136, 0.1);
+    border-right-color: rgba(0, 255, 136, 0.7);
+    animation: spinRing 2s linear infinite reverse;
+}
+.ring-3 {
+    width: 116px;
+    height: 116px;
+    border-color: rgba(168, 85, 247, 0.1);
+    border-bottom-color: rgba(168, 85, 247, 0.6);
+    animation: spinRing 3s linear infinite;
+}
+.ring-4 {
+    width: 84px;
+    height: 84px;
+    border-color: rgba(255, 170, 0, 0.1);
+    border-left-color: rgba(255, 170, 0, 0.6);
+    animation: spinRing 1.8s linear infinite reverse;
+}
+
+@keyframes spinRing {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Orbiting dots ---- */
+.orbit-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    box-shadow: 0 0 12px var(--accent-blue), 0 0 24px rgba(0, 212, 255, 0.3);
+}
+
+.dot-1 {
+    animation: orbitDot1 2.5s linear infinite;
+}
+.dot-2 {
+    background: var(--accent-green);
+    box-shadow: 0 0 12px var(--accent-green), 0 0 24px rgba(0, 255, 136, 0.3);
+    animation: orbitDot2 2s linear infinite;
+    width: 6px;
+    height: 6px;
+}
+.dot-3 {
+    background: var(--accent-amber);
+    box-shadow: 0 0 12px var(--accent-amber), 0 0 24px rgba(255, 170, 0, 0.3);
+    animation: orbitDot3 3s linear infinite;
+    width: 5px;
+    height: 5px;
+}
+
+@keyframes orbitDot1 {
+    from { transform: rotate(0deg) translateX(90px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(90px) rotate(-360deg); }
+}
+@keyframes orbitDot2 {
+    from { transform: rotate(120deg) translateX(74px) rotate(-120deg); }
+    to { transform: rotate(480deg) translateX(74px) rotate(-480deg); }
+}
+@keyframes orbitDot3 {
+    from { transform: rotate(240deg) translateX(58px) rotate(-240deg); }
+    to { transform: rotate(600deg) translateX(58px) rotate(-600deg); }
+}
+
+/* ---- Center logo ---- */
+.loader-logo-center {
+    position: relative;
+    z-index: 2;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
+    border-radius: 50%;
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    animation: logoPulse 2s ease-in-out infinite;
+}
+
+.loader-radio-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-blue);
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+}
+
+@keyframes logoPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 40px rgba(0, 212, 255, 0.35), 0 0 60px rgba(0, 255, 136, 0.15);
+    }
+}
+
+/* ---- Brand text ---- */
+.loader-brand {
+    text-align: center;
+}
+
+.loader-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--text-primary);
+    animation: titleGlow 3s ease-in-out infinite;
+}
+.loader-title span {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@keyframes titleGlow {
+    0%, 100% { text-shadow: 0 0 20px rgba(0, 212, 255, 0.1); }
+    50% { text-shadow: 0 0 40px rgba(0, 212, 255, 0.2), 0 0 60px rgba(0, 255, 136, 0.1); }
+}
+
+.loader-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 8px;
+    animation: subtitleFade 2s ease-in-out infinite;
+}
+
+@keyframes subtitleFade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ---- Progress bar ---- */
+.loader-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 280px;
+}
+
+.loader-progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loader-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green), var(--accent-blue));
+    background-size: 200% 100%;
+    animation: progressShimmer 1.5s linear infinite;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+}
+
+@keyframes progressShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.loader-progress-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    transition: opacity 0.3s ease;
+    min-height: 18px;
+}
+
+/* ---- Event info ---- */
+.loader-event-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    animation: eventInfoIn 1s ease-out 0.5s both;
+}
+
+@keyframes eventInfoIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.loader-event-badge {
+    padding: 6px 18px;
+    background: rgba(255, 170, 0, 0.08);
+    border: 1px solid rgba(255, 170, 0, 0.2);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-amber);
+    letter-spacing: 1px;
+}
+
+.loader-event-venue {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+    .loader-stadium {
+        width: 140px;
+        height: 140px;
+    }
+    .ring-1 { width: 140px; height: 140px; }
+    .ring-2 { width: 115px; height: 115px; }
+    .ring-3 { width: 90px; height: 90px; }
+    .ring-4 { width: 65px; height: 65px; }
+    .loader-title { font-size: 1.8rem; }
+    .loader-progress { width: 220px; }
+
+    @keyframes orbitDot1 {
+        from { transform: rotate(0deg) translateX(70px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
+    }
+    @keyframes orbitDot2 {
+        from { transform: rotate(120deg) translateX(57px) rotate(-120deg); }
+        to { transform: rotate(480deg) translateX(57px) rotate(-480deg); }
+    }
+    @keyframes orbitDot3 {
+        from { transform: rotate(240deg) translateX(45px) rotate(-240deg); }
+        to { transform: rotate(600deg) translateX(45px) rotate(-600deg); }
+    }
+}

@@ -1,0 +1,215 @@
+/* ========================================
+   StadiumPulse — Queue Tracker
+   ======================================== */
+
+.queue-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.queue-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+.queue-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+}
+
+.queue-filter-bar {
+    display: flex;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+}
+.filter-btn {
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+.filter-btn:hover { color: var(--text-primary); }
+.filter-btn.active {
+    background: rgba(0, 212, 255, 0.12);
+    color: var(--accent-blue);
+}
+
+/* Prediction Banner */
+.prediction-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-left: 3px solid var(--accent-purple);
+}
+.pred-icon { width: 22px; height: 22px; color: var(--accent-purple); flex-shrink: 0; }
+#prediction-text { font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Queue Grid */
+.queue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+}
+
+.queue-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    transition: all var(--transition-normal);
+    animation: fadeInTab 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+.queue-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+}
+.queue-card.status-green::before { background: var(--accent-green); box-shadow: var(--glow-green); }
+.queue-card.status-yellow::before { background: var(--accent-amber); box-shadow: var(--glow-amber); }
+.queue-card.status-red::before { background: var(--accent-red); box-shadow: var(--glow-red); }
+
+.queue-card:hover {
+    border-color: rgba(0, 212, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: var(--glass-shadow), 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.queue-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.queue-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.queue-type-icon {
+    width: 36px; height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: var(--radius-sm);
+}
+.queue-type-icon svg { width: 18px; height: 18px; color: var(--accent-blue); }
+
+.queue-trend {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+.queue-trend.up { color: var(--accent-red); }
+.queue-trend.down { color: var(--accent-green); }
+.queue-trend.stable { color: var(--text-muted); }
+
+/* Wait time display */
+.queue-wait {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+.queue-wait-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.queue-wait-unit {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.wait-green .queue-wait-value { color: var(--accent-green); }
+.wait-yellow .queue-wait-value { color: var(--accent-amber); }
+.wait-red .queue-wait-value { color: var(--accent-red); }
+
+/* Crowd bar */
+.crowd-bar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.crowd-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+.crowd-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.crowd-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease, background 0.5s ease;
+}
+.bar-green .crowd-bar-fill {
+    background: linear-gradient(90deg, var(--accent-green), #00cc66);
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+.bar-yellow .crowd-bar-fill {
+    background: linear-gradient(90deg, var(--accent-amber), #cc8800);
+    box-shadow: 0 0 8px rgba(255, 170, 0, 0.3);
+}
+.bar-red .crowd-bar-fill {
+    background: linear-gradient(90deg, var(--accent-red), #cc2244);
+    box-shadow: 0 0 8px rgba(255, 59, 92, 0.3);
+}
+
+/* Notify button */
+.queue-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+}
+.queue-prediction {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+.notify-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--border-accent);
+    color: var(--accent-blue);
+    transition: all var(--transition-fast);
+}
+.notify-btn:hover {
+    background: rgba(0, 212, 255, 0.1);
+}
+.notify-btn.active {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--accent-blue);
+}
+.notify-btn svg { width: 14px; height: 14px; }

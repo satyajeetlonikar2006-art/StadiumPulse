@@ -1,0 +1,67 @@
+/* ========================================
+   StadiumPulse — Components (More tab, misc)
+   ======================================== */
+
+/* More Features Grid */
+.more-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+.more-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+}
+.more-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+}
+.more-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+    transition: all var(--transition-normal);
+    cursor: pointer;
+}
+.more-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent-blue);
+    box-shadow: var(--glass-shadow), var(--glow-blue);
+}
+.more-icon {
+    width: 42px; height: 42px;
+    color: var(--accent-blue);
+}
+.more-card span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* SOS Overlay */
+.sos-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 59, 92, 0.08);
+    z-index: calc(var(--z-modal) - 1);
+    pointer-events: none;
+    animation: sosFlash 1s infinite;
+}
+@keyframes sosFlash {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Evacuation active state on map */
+.evac-active .zone-shape {
+    animation: evacuationPulse 1.5s infinite;
+}
+@keyframes evacuationPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}

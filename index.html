@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="StadiumPulse — Real-time Smart Stadium Experience System for live crowd tracking, navigation, and event management.">
+    <title>StadiumPulse | Smart Stadium Experience</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/loader.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/heatmap.css">
+    <link rel="stylesheet" href="css/panels.css">
+    <link rel="stylesheet" href="css/queue.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/analytics.css">
+    <link rel="stylesheet" href="css/planner.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+    <!-- ===================== LOADING SCREEN ===================== -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader-bg-effects">
+            <div class="loader-orb loader-orb-1"></div>
+            <div class="loader-orb loader-orb-2"></div>
+            <div class="loader-orb loader-orb-3"></div>
+        </div>
+        <div class="loader-content">
+            <!-- Stadium rings animation -->
+            <div class="loader-stadium">
+                <div class="stadium-ring ring-1"></div>
+                <div class="stadium-ring ring-2"></div>
+                <div class="stadium-ring ring-3"></div>
+                <div class="stadium-ring ring-4"></div>
+                <!-- Pulse dots orbiting -->
+                <div class="orbit-dot dot-1"></div>
+                <div class="orbit-dot dot-2"></div>
+                <div class="orbit-dot dot-3"></div>
+                <!-- Center logo -->
+                <div class="loader-logo-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="loader-radio-icon">
+                        <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
+                        <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.4"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.4"/>
+                        <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
+                    </svg>
+                </div>
+            </div>
+            <!-- Brand -->
+            <div class="loader-brand">
+                <h1 class="loader-title">Stadium<span>Pulse</span></h1>
+                <p class="loader-subtitle">Smart Stadium Experience System</p>
+            </div>
+            <!-- Progress bar -->
+            <div class="loader-progress">
+                <div class="loader-progress-track">
+                    <div class="loader-progress-fill" id="loader-progress-fill"></div>
+                </div>
+                <span class="loader-progress-text" id="loader-status">Initializing systems...</span>
+            </div>
+            <!-- Event info -->
+            <div class="loader-event-info">
+                <span class="loader-event-badge">🏏 IPL Finals 2026</span>
+                <span class="loader-event-venue">Wankhede Stadium, Mumbai</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== TOAST CONTAINER ===================== -->
+    <div id="toast-container"></div>
+
+    <!-- ===================== TOP NAVBAR ===================== -->
+    <nav id="main-navbar" class="navbar">
+        <div class="navbar-left">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i data-lucide="radio" class="logo-lucide"></i>
+                </div>
+                <span class="logo-text">Stadium<span class="logo-accent">Pulse</span></span>
+            </div>
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span class="live-text">LIVE</span>
+            </div>
+        </div>
+        <div class="navbar-center">
+            <h1 class="event-title">
+                <i data-lucide="trophy" class="nav-icon"></i>
+                <span>IPL Finals 2026 | Wankhede Stadium</span>
+            </h1>
+        </div>
+        <div class="navbar-right">
+            <div class="nav-datetime" id="nav-datetime">
+                <i data-lucide="clock" class="nav-icon-sm"></i>
+                <span id="nav-time"></span>
+                <span id="nav-date"></span>
+            </div>
+            <div class="nav-controls">
+                <button class="nav-btn" id="btn-accessibility" title="Accessibility Mode">
+                    <i data-lucide="eye" class="nav-icon-sm"></i>
+                </button>
+                <button class="nav-btn" id="btn-language" title="Language">
+                    <i data-lucide="globe" class="nav-icon-sm"></i>
+                    <span class="lang-label">EN</span>
+                </button>
+                <button class="nav-btn" id="btn-fast-forward" title="Fast Forward Simulation">
+                    <i data-lucide="fast-forward" class="nav-icon-sm"></i>
+                </button>
+                <button class="nav-btn nav-btn-accent" id="btn-notifications" title="Notifications">
+                    <i data-lucide="bell" class="nav-icon-sm"></i>
+                    <span class="notif-badge" id="notif-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===================== TAB BAR ===================== -->
+    <div class="tab-bar" id="tab-bar">
+        <button class="tab-btn active" data-tab="heatmap">
+            <i data-lucide="map" class="tab-icon"></i>
+            <span>Live Map</span>
+        </button>
+        <button class="tab-btn" data-tab="queue">
+            <i data-lucide="timer" class="tab-icon"></i>
+            <span>Queues</span>
+        </button>
+        <button class="tab-btn" data-tab="admin">
+            <i data-lucide="shield-alert" class="tab-icon"></i>
+            <span>Admin</span>
+        </button>
+        <button class="tab-btn" data-tab="analytics">
+            <i data-lucide="bar-chart-3" class="tab-icon"></i>
+            <span>Analytics</span>
+        </button>
+        <button class="tab-btn" data-tab="planner">
+            <i data-lucide="calendar-check" class="tab-icon"></i>
+            <span>Planner</span>
+        </button>
+        <button class="tab-btn" data-tab="more">
+            <i data-lucide="grid-3x3" class="tab-icon"></i>
+            <span>More</span>
+        </button>
+    </div>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="main-content" id="main-content">
+
+        <!-- ===== TAB: LIVE HEATMAP ===== -->
+        <section class="tab-panel active" id="panel-heatmap">
+            <div class="heatmap-layout">
+                <!-- Stadium Map -->
+                <div class="map-container glass-card">
+                    <div class="map-header">
+                        <h2><i data-lucide="map-pin" class="section-icon"></i> Live Stadium Heatmap</h2>
+                        <div class="map-legend">
+                            <span class="legend-item"><span class="legend-dot green"></span>Clear</span>
+                            <span class="legend-item"><span class="legend-dot yellow"></span>Moderate</span>
+                            <span class="legend-item"><span class="legend-dot red"></span>Crowded</span>
+                        </div>
+                    </div>
+                    <div class="stadium-map-wrapper" id="stadium-map-wrapper">
+                        <svg id="stadium-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg"></svg>
+                    </div>
+                    <div class="map-footer">
+                        <span class="attendee-count"><i data-lucide="users" class="footer-icon"></i> Total: <strong id="total-attendees">0</strong> / 33,000</span>
+                        <span class="last-update">Last updated: <span id="last-update-time">--</span></span>
+                    </div>
+                </div>
+
+                <!-- Side Panel: Smart Assistant -->
+                <div class="assistant-panel glass-card">
+                    <div class="assistant-header">
+                        <h2><i data-lucide="bot" class="section-icon"></i> Smart Assistant</h2>
+                    </div>
+
+                    <!-- Alerts Banner -->
+                    <div class="alerts-banner" id="alerts-banner">
+                        <div class="alert-scroll" id="alert-scroll"></div>
+                    </div>
+
+                    <!-- Seat Input -->
+                    <div class="seat-input-group">
+                        <label for="seat-input">Enter Your Seat</label>
+                        <div class="input-row">
+                            <select id="seat-block" class="glass-input">
+                                <option value="">Block</option>
+                                <option value="A">Block A</option>
+                                <option value="B">Block B</option>
+                                <option value="C">Block C</option>
+                                <option value="D">Block D</option>
+                                <option value="E">Block E</option>
+                                <option value="F">Block F</option>
+                            </select>
+                            <input type="number" id="seat-row" class="glass-input" placeholder="Row" min="1" max="50">
+                            <input type="number" id="seat-number" class="glass-input" placeholder="Seat" min="1" max="60">
+                        </div>
+                        <button class="btn btn-primary" id="btn-find-seat">
+                            <i data-lucide="navigation" class="btn-icon"></i> Find My Route
+                        </button>
+                    </div>
+
+                    <!-- Route Result -->
+                    <div class="route-result hidden" id="route-result">
+                        <h3><i data-lucide="route" class="section-icon-sm"></i> Your Personalized Route</h3>
+                        <div class="route-details" id="route-details"></div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="action-btn" id="btn-nearby">
+                            <i data-lucide="locate" class="action-icon"></i>
+                            <span>Nearby</span>
+                        </button>
+                        <button class="action-btn" id="btn-food-order">
+                            <i data-lucide="utensils" class="action-icon"></i>
+                            <span>Food</span>
+                        </button>
+                        <button class="action-btn" id="btn-share-location">
+                            <i data-lucide="share-2" class="action-icon"></i>
+                            <span>Share</span>
+                        </button>
+                        <button class="action-btn" id="btn-lost-found">
+                            <i data-lucide="search" class="action-icon"></i>
+                            <span>Lost & Found</span>
+                        </button>
+                        <button class="action-btn" id="btn-ar-nav">
+                            <i data-lucide="scan" class="action-icon"></i>
+                            <span>AR Nav</span>
+                        </button>
+                        <button class="action-btn" id="btn-upgrade-seat">
+                            <i data-lucide="arrow-up-circle" class="action-icon"></i>
+                            <span>Upgrade</span>
+                        </button>
+                    </div>
+
+                    <!-- Chatbot -->
+                    <div class="chatbot-section">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-msg bot">
+                                <div class="chat-avatar"><i data-lucide="bot"></i></div>
+                                <div class="chat-bubble">Welcome to StadiumPulse! 🏟️ Ask me anything about the venue, routes, or facilities.</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-row">
+                            <input type="text" id="chat-input" class="glass-input" placeholder="Ask about routes, food, facilities...">
+                            <button class="btn btn-primary btn-sm" id="btn-chat-send">
+                                <i data-lucide="send" class="btn-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TAB: QUEUE TRACKER ===== -->
+        <section class="tab-panel" id="panel-queue">
+            <div class="queue-layout">
+                <div class="queue-header">
+                    <h2><i data-lucide="timer" class="section-icon"></i> Real-Time Queue Tracker</h2>
+                    <div class="queue-filter-bar">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="gates">Gates</button>
+                        <button class="filter-btn" data-filter="food">Food</button>
+                        <button class="filter-btn" data-filter="washroom">Washrooms</button>
+                        <button class="filter-btn" data-filter="parking">Parking</button>
+                    </div>
+                </div>
+                <div class="prediction-banner glass-card" id="prediction-banner">
+                    <i data-lucide="brain" class="pred-icon"></i>
+                    <span id="prediction-text">Analyzing crowd patterns...</span>
+                </div>
+                <div class="queue-grid" id="queue-grid">
+                    <!-- Queue cards generated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TAB: ADMIN PANEL ===== -->
+        <section class="tab-panel" id="panel-admin">
+            <div class="admin-layout">
+                <div class="admin-header">
+                    <h2><i data-lucide="shield-alert" class="section-icon"></i> Emergency & Broadcast System</h2>
+                    <div class="admin-toggle">
+                        <button class="toggle-btn active" data-view="organizer">Organizer Dashboard</button>
+                        <button class="toggle-btn" data-view="attendee">Attendee View</button>
+                    </div>
+                </div>
+
+                <div class="admin-grid">
+                    <!-- Broadcast Panel -->
+                    <div class="admin-card glass-card">
+                        <h3><i data-lucide="megaphone" class="card-icon"></i> Broadcast Alert</h3>
+                        <select id="broadcast-zone" class="glass-input">
+                            <option value="all">All Zones</option>
+                            <option value="gate-a">Gate A</option>
+                            <option value="gate-b">Gate B</option>
+                            <option value="gate-c">Gate C</option>
+                            <option value="gate-d">Gate D</option>
+                            <option value="food-1">Food Court 1</option>
+                            <option value="food-2">Food Court 2</option>
+                            <option value="food-3">Food Court 3</option>
+                            <option value="food-4">Food Court 4</option>
+                        </select>
+                        <textarea id="broadcast-msg" class="glass-input" placeholder="Type alert message..." rows="3"></textarea>
+                        <div class="broadcast-btns">
+                            <button class="btn btn-primary" id="btn-broadcast"><i data-lucide="send" class="btn-icon"></i> Broadcast</button>
+                            <button class="btn btn-danger" id="btn-sos"><i data-lucide="alert-triangle" class="btn-icon"></i> SOS Emergency</button>
+                        </div>
+                    </div>
+
+                    <!-- Gate Control -->
+                    <div class="admin-card glass-card">
+                        <h3><i data-lucide="door-open" class="card-icon"></i> Gate Control</h3>
+                        <div class="gate-controls" id="gate-controls">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Evacuation -->
+                    <div class="admin-card glass-card">
+                        <h3><i data-lucide="siren" class="card-icon"></i> Evacuation System</h3>
+                        <button class="btn btn-danger btn-lg" id="btn-evacuate">
+                            <i data-lucide="alert-octagon" class="btn-icon"></i> Activate Evacuation Routes
+                        </button>
+                        <div class="evac-status" id="evac-status">
+                            <span class="status-dot green"></span> All systems normal
+                        </div>
+                        <div class="evac-routes hidden" id="evac-routes">
+                            <div class="evac-route"><i data-lucide="arrow-right"></i> Gate A → Parking Lot 1 (2 min)</div>
+                            <div class="evac-route"><i data-lucide="arrow-right"></i> Gate B → Metro Exit (3 min)</div>
+                            <div class="evac-route"><i data-lucide="arrow-right"></i> Gate C → Emergency Assembly (1 min)</div>
+                            <div class="evac-route"><i data-lucide="arrow-right"></i> Gate D → Bus Bay (4 min)</div>
+                        </div>
+                    </div>
+
+                    <!-- Incident Log -->
+                    <div class="admin-card glass-card">
+                        <h3><i data-lucide="clipboard-list" class="card-icon"></i> Incident Log</h3>
+                        <div class="incident-log" id="incident-log">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TAB: ANALYTICS ===== -->
+        <section class="tab-panel" id="panel-analytics">
+            <div class="analytics-layout">
+                <div class="analytics-header">
+                    <h2><i data-lucide="bar-chart-3" class="section-icon"></i> Analytics Dashboard</h2>
+                    <button class="btn btn-outline" id="btn-export">
+                        <i data-lucide="download" class="btn-icon"></i> Export Report
+                    </button>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-row" id="kpi-row">
+                    <div class="kpi-card glass-card">
+                        <div class="kpi-icon blue"><i data-lucide="users"></i></div>
+                        <div class="kpi-data">
+                            <span class="kpi-value" id="kpi-attendance">0</span>
+                            <span class="kpi-label">Total Attendance</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-card">
+                        <div class="kpi-icon green"><i data-lucide="timer"></i></div>
+                        <div class="kpi-data">
+                            <span class="kpi-value" id="kpi-avg-wait">0 min</span>
+                            <span class="kpi-label">Avg Wait Time</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-card">
+                        <div class="kpi-icon amber"><i data-lucide="flame"></i></div>
+                        <div class="kpi-data">
+                            <span class="kpi-value" id="kpi-busiest">--</span>
+                            <span class="kpi-label">Busiest Zone</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-card">
+                        <div class="kpi-icon red"><i data-lucide="alert-triangle"></i></div>
+                        <div class="kpi-data">
+                            <span class="kpi-value" id="kpi-incidents">0</span>
+                            <span class="kpi-label">Incidents</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-card">
+                        <div class="kpi-icon cyan"><i data-lucide="door-open"></i></div>
+                        <div class="kpi-data">
+                            <span class="kpi-value" id="kpi-gates">4/4</span>
+                            <span class="kpi-label">Gates Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card glass-card">
+                        <h3>Crowd Flow Over Time</h3>
+                        <canvas id="chart-crowd-flow"></canvas>
+                    </div>
+                    <div class="chart-card glass-card">
+                        <h3>Zone Distribution</h3>
+                        <canvas id="chart-zone-dist"></canvas>
+                    </div>
+                    <div class="chart-card glass-card full-width">
+                        <div class="heatmap-history-header">
+                            <h3>Heatmap Intensity History</h3>
+                            <button class="btn btn-outline btn-sm" id="btn-replay"><i data-lucide="play" class="btn-icon"></i> Replay 30 min</button>
+                        </div>
+                        <canvas id="chart-heatmap-history"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TAB: PRE-EVENT PLANNER ===== -->
+        <section class="tab-panel" id="panel-planner">
+            <div class="planner-layout">
+                <div class="planner-header">
+                    <h2><i data-lucide="calendar-check" class="section-icon"></i> Pre-Event Planner</h2>
+                </div>
+
+                <!-- Countdown -->
+                <div class="countdown-card glass-card">
+                    <h3><i data-lucide="clock" class="card-icon"></i> Event Countdown</h3>
+                    <div class="countdown-display" id="countdown-display">
+                        <div class="cd-unit"><span class="cd-val" id="cd-days">00</span><span class="cd-label">Days</span></div>
+                        <div class="cd-sep">:</div>
+                        <div class="cd-unit"><span class="cd-val" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
+                        <div class="cd-sep">:</div>
+                        <div class="cd-unit"><span class="cd-val" id="cd-mins">00</span><span class="cd-label">Mins</span></div>
+                        <div class="cd-sep">:</div>
+                        <div class="cd-unit"><span class="cd-val" id="cd-secs">00</span><span class="cd-label">Secs</span></div>
+                    </div>
+                </div>
+
+                <div class="planner-grid">
+                    <!-- Plan My Visit Wizard -->
+                    <div class="planner-card glass-card">
+                        <h3><i data-lucide="compass" class="card-icon"></i> Plan My Visit</h3>
+                        <div class="wizard-steps" id="wizard-steps">
+                            <div class="wizard-step active" data-step="1">
+                                <span class="step-num">1</span>
+                                <span class="step-label">Seat</span>
+                            </div>
+                            <div class="wizard-step" data-step="2">
+                                <span class="step-num">2</span>
+                                <span class="step-label">Transport</span>
+                            </div>
+                            <div class="wizard-step" data-step="3">
+                                <span class="step-num">3</span>
+                                <span class="step-label">Plan</span>
+                            </div>
+                        </div>
+                        <div class="wizard-content" id="wizard-content">
+                            <!-- Step 1: Seat -->
+                            <div class="wizard-page active" data-step="1">
+                                <label>Select Your Block</label>
+                                <select id="plan-block" class="glass-input">
+                                    <option value="">Choose block...</option>
+                                    <option value="A">Block A — North Stand</option>
+                                    <option value="B">Block B — East Pavilion</option>
+                                    <option value="C">Block C — South Stand</option>
+                                    <option value="D">Block D — West Gallery</option>
+                                    <option value="E">Block E — Upper Deck North</option>
+                                    <option value="F">Block F — Upper Deck South</option>
+                                </select>
+                                <label>Row Number</label>
+                                <input type="number" id="plan-row" class="glass-input" placeholder="e.g. 12" min="1" max="50">
+                                <button class="btn btn-primary" id="btn-wizard-next-1">Next <i data-lucide="arrow-right" class="btn-icon"></i></button>
+                            </div>
+                            <!-- Step 2: Transport -->
+                            <div class="wizard-page" data-step="2">
+                                <label>How will you arrive?</label>
+                                <div class="transport-options" id="transport-options">
+                                    <button class="transport-btn" data-transport="metro">
+                                        <i data-lucide="train-front"></i>
+                                        <span>Metro</span>
+                                    </button>
+                                    <button class="transport-btn" data-transport="bus">
+                                        <i data-lucide="bus"></i>
+                                        <span>Bus</span>
+                                    </button>
+                                    <button class="transport-btn" data-transport="cab">
+                                        <i data-lucide="car"></i>
+                                        <span>Cab</span>
+                                    </button>
+                                    <button class="transport-btn" data-transport="self">
+                                        <i data-lucide="car-front"></i>
+                                        <span>Self Drive</span>
+                                    </button>
+                                </div>
+                                <button class="btn btn-outline" id="btn-wizard-back-2"><i data-lucide="arrow-left" class="btn-icon"></i> Back</button>
+                                <button class="btn btn-primary" id="btn-wizard-next-2">Next <i data-lucide="arrow-right" class="btn-icon"></i></button>
+                            </div>
+                            <!-- Step 3: Plan -->
+                            <div class="wizard-page" data-step="3">
+                                <div class="visit-plan" id="visit-plan">
+                                    <!-- Generated by JS -->
+                                </div>
+                                <button class="btn btn-outline" id="btn-wizard-back-3"><i data-lucide="arrow-left" class="btn-icon"></i> Back</button>
+                                <button class="btn btn-primary" id="btn-wizard-save">
+                                    <i data-lucide="download" class="btn-icon"></i> Save My Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weather & Info -->
+                    <div class="planner-card glass-card">
+                        <h3><i data-lucide="cloud-sun" class="card-icon"></i> Match Day Info</h3>
+                        <div class="weather-widget" id="weather-widget">
+                            <div class="weather-main">
+                                <i data-lucide="sun" class="weather-icon-lg"></i>
+                                <span class="weather-temp">32°C</span>
+                            </div>
+                            <div class="weather-details">
+                                <span><i data-lucide="droplets"></i> Humidity: 65%</span>
+                                <span><i data-lucide="wind"></i> Wind: 12 km/h</span>
+                                <span><i data-lucide="thermometer"></i> Feels: 35°C</span>
+                            </div>
+                        </div>
+                        <div class="info-section">
+                            <h4>👕 Dress Code</h4>
+                            <p>Light, breathable clothing recommended. Team jerseys encouraged!</p>
+                        </div>
+                        <div class="info-section">
+                            <h4>🚫 Prohibited Items</h4>
+                            <div class="prohibited-list">
+                                <span class="prohib-item">Glass bottles</span>
+                                <span class="prohib-item">Fireworks</span>
+                                <span class="prohib-item">Weapons</span>
+                                <span class="prohib-item">Drones</span>
+                                <span class="prohib-item">Laser pointers</span>
+                                <span class="prohib-item">Large bags</span>
+                                <span class="prohib-item">Alcohol</span>
+                                <span class="prohib-item">Professional cameras</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transport Map -->
+                    <div class="planner-card glass-card full-width">
+                        <h3><i data-lucide="map" class="card-icon"></i> Transport & Parking Map</h3>
+                        <div class="transport-map" id="transport-map">
+                            <svg id="transport-svg" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TAB: MORE (Bonus Features) ===== -->
+        <section class="tab-panel" id="panel-more">
+            <div class="more-layout">
+                <div class="more-header">
+                    <h2><i data-lucide="grid-3x3" class="section-icon"></i> More Features</h2>
+                </div>
+                <div class="more-grid">
+                    <button class="more-card glass-card" id="more-parking">
+                        <i data-lucide="car" class="more-icon"></i>
+                        <span>Smart Parking</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-food">
+                        <i data-lucide="utensils" class="more-icon"></i>
+                        <span>Food Pre-Order</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-feedback">
+                        <i data-lucide="star" class="more-icon"></i>
+                        <span>Feedback</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-leaderboard">
+                        <i data-lucide="award" class="more-icon"></i>
+                        <span>Leaderboard</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-lost">
+                        <i data-lucide="search" class="more-icon"></i>
+                        <span>Lost & Found</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-ar">
+                        <i data-lucide="scan" class="more-icon"></i>
+                        <span>AR Wayfinding</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-share">
+                        <i data-lucide="share-2" class="more-icon"></i>
+                        <span>Share Location</span>
+                    </button>
+                    <button class="more-card glass-card" id="more-upgrade">
+                        <i data-lucide="arrow-up-circle" class="more-icon"></i>
+                        <span>Seat Upgrade</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===================== MODALS ===================== -->
+
+    <!-- Food Pre-Order Modal -->
+    <div class="modal-overlay hidden" id="modal-food">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="utensils" class="card-icon"></i> Food Pre-Order</h3>
+                <button class="modal-close" data-close="modal-food"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <label>Select Food Stall</label>
+                <select id="food-stall" class="glass-input">
+                    <option value="1">🍔 Stall 1 — Burgers & Fries</option>
+                    <option value="2">🍕 Stall 2 — Pizza Corner</option>
+                    <option value="3">🌮 Stall 3 — Indian Street Food</option>
+                    <option value="4">🥤 Stall 4 — Beverages & Snacks</option>
+                </select>
+                <div class="food-menu" id="food-menu">
+                    <!-- Generated by JS -->
+                </div>
+                <div class="food-cart" id="food-cart">
+                    <h4>Your Order</h4>
+                    <div class="cart-items" id="cart-items">
+                        <p class="empty-cart">No items added yet</p>
+                    </div>
+                    <div class="cart-total">
+                        Total: ₹<span id="cart-total">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-food">Cancel</button>
+                <button class="btn btn-primary" id="btn-place-order"><i data-lucide="check" class="btn-icon"></i> Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lost & Found Modal -->
+    <div class="modal-overlay hidden" id="modal-lost">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="search" class="card-icon"></i> Lost & Found</h3>
+                <button class="modal-close" data-close="modal-lost"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <label>What did you lose?</label>
+                <input type="text" id="lost-item" class="glass-input" placeholder="e.g. Blue backpack, wallet...">
+                <label>Last seen location</label>
+                <select id="lost-location" class="glass-input">
+                    <option value="">Select zone...</option>
+                    <option value="gate-a">Gate A Area</option>
+                    <option value="gate-b">Gate B Area</option>
+                    <option value="food-1">Food Court 1</option>
+                    <option value="food-2">Food Court 2</option>
+                    <option value="block-c">Block C Seating</option>
+                    <option value="washroom-north">Washroom North</option>
+                </select>
+                <label>Your Contact Number</label>
+                <input type="tel" id="lost-contact" class="glass-input" placeholder="+91 XXXXX XXXXX">
+                <label>Additional Details</label>
+                <textarea id="lost-details" class="glass-input" rows="3" placeholder="Describe the item..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-lost">Cancel</button>
+                <button class="btn btn-primary" id="btn-report-lost"><i data-lucide="send" class="btn-icon"></i> Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Location Modal -->
+    <div class="modal-overlay hidden" id="modal-share">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="share-2" class="card-icon"></i> Share My Location</h3>
+                <button class="modal-close" data-close="modal-share"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="share-code-display">
+                    <span class="share-label">Your Location Code</span>
+                    <span class="share-code" id="share-code">SP-XXXX</span>
+                    <button class="btn btn-outline btn-sm" id="btn-copy-code"><i data-lucide="copy" class="btn-icon"></i> Copy</button>
+                </div>
+                <label>Enter Friend's Code</label>
+                <input type="text" id="friend-code" class="glass-input" placeholder="e.g. SP-4829">
+                <button class="btn btn-primary" id="btn-find-friend"><i data-lucide="users" class="btn-icon"></i> Find Friend</button>
+                <div class="friend-result hidden" id="friend-result"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-share">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal-overlay hidden" id="modal-feedback">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="star" class="card-icon"></i> Rate Your Experience</h3>
+                <button class="modal-close" data-close="modal-feedback"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="rating-stars" id="rating-stars">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+                <span class="rating-text" id="rating-text">Tap to rate</span>
+                <label>What did you enjoy most?</label>
+                <div class="feedback-tags" id="feedback-tags">
+                    <button class="tag-btn" data-tag="seating">🪑 Seating</button>
+                    <button class="tag-btn" data-tag="food">🍕 Food</button>
+                    <button class="tag-btn" data-tag="facilities">🚿 Facilities</button>
+                    <button class="tag-btn" data-tag="security">🛡️ Security</button>
+                    <button class="tag-btn" data-tag="atmosphere">🎉 Atmosphere</button>
+                    <button class="tag-btn" data-tag="app">📱 This App</button>
+                </div>
+                <label>Comments</label>
+                <textarea id="feedback-comment" class="glass-input" rows="3" placeholder="Share your thoughts..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-feedback">Cancel</button>
+                <button class="btn btn-primary" id="btn-submit-feedback"><i data-lucide="send" class="btn-icon"></i> Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Parking Modal -->
+    <div class="modal-overlay hidden" id="modal-parking">
+        <div class="modal glass-card modal-lg">
+            <div class="modal-header">
+                <h3><i data-lucide="car" class="card-icon"></i> Smart Parking</h3>
+                <button class="modal-close" data-close="modal-parking"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="parking-zones" id="parking-zones">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-parking">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal-overlay hidden" id="modal-leaderboard">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="award" class="card-icon"></i> Community Leaderboard</h3>
+                <button class="modal-close" data-close="modal-leaderboard"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-leaderboard">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Wayfinding Modal -->
+    <div class="modal-overlay hidden" id="modal-ar">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="scan" class="card-icon"></i> AR Wayfinding</h3>
+                <button class="modal-close" data-close="modal-ar"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="ar-placeholder">
+                    <div class="ar-camera-frame">
+                        <i data-lucide="camera" class="ar-cam-icon"></i>
+                        <div class="ar-scan-line"></div>
+                    </div>
+                    <p class="ar-text">Point your camera at any sign in the stadium to get AR navigation directions.</p>
+                    <p class="ar-subtext">🚧 AR feature requires camera access — available in the StadiumPulse mobile app.</p>
+                    <button class="btn btn-primary" id="btn-ar-demo"><i data-lucide="play" class="btn-icon"></i> Watch Demo</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-ar">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seat Upgrade Modal -->
+    <div class="modal-overlay hidden" id="modal-upgrade">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="arrow-up-circle" class="card-icon"></i> Seat Upgrade Suggestions</h3>
+                <button class="modal-close" data-close="modal-upgrade"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="upgrade-list" id="upgrade-list">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-upgrade">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nearby Facilities Modal -->
+    <div class="modal-overlay hidden" id="modal-nearby">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="locate" class="card-icon"></i> Nearby Facilities</h3>
+                <button class="modal-close" data-close="modal-nearby"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="nearby-list" id="nearby-list">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" data-close="modal-nearby">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Panel -->
+    <div class="modal-overlay hidden" id="modal-notifications">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="bell" class="card-icon"></i> Notifications</h3>
+                <button class="modal-close" data-close="modal-notifications"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="notif-list" id="notif-list">
+                    <p class="empty-notif">No notifications yet</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btn-clear-notifs">Clear All</button>
+                <button class="btn btn-outline" data-close="modal-notifications">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Selector Modal -->
+    <div class="modal-overlay hidden" id="modal-language">
+        <div class="modal glass-card modal-sm">
+            <div class="modal-header">
+                <h3><i data-lucide="globe" class="card-icon"></i> Select Language</h3>
+                <button class="modal-close" data-close="modal-language"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="language-options">
+                    <button class="lang-option active" data-lang="en">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="hi">🇮🇳 हिन्दी</button>
+                    <button class="lang-option" data-lang="mr">🇮🇳 मराठी</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== SCRIPTS ===================== -->
+    <script src="js/data.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/stadium-map.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/queue.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/planner.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

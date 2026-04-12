@@ -1,0 +1,121 @@
+/* ========================================
+   StadiumPulse — Responsive Breakpoints
+   ======================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .heatmap-layout {
+        grid-template-columns: 1fr;
+    }
+    .assistant-panel {
+        max-height: none;
+    }
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    .kpi-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    .planner-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    :root {
+        --navbar-height: 56px;
+        --tabbar-height: 46px;
+    }
+
+    .main-content {
+        padding: var(--space-md);
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: 0 var(--space-md);
+    }
+    .navbar-center { display: none; }
+    .nav-datetime { display: none; }
+    .logo-text { font-size: 1.1rem; }
+
+    /* Tab bar scrollable */
+    .tab-bar {
+        padding: 0 var(--space-sm);
+        gap: 0;
+    }
+    .tab-btn {
+        padding: 6px 12px;
+        font-size: 0.78rem;
+    }
+    .tab-btn span { display: none; }
+
+    /* Queue */
+    .queue-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* KPIs */
+    .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kpi-card {
+        padding: var(--space-md);
+    }
+    .kpi-value { font-size: 1.1rem; }
+
+    /* Input rows */
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Countdown */
+    .cd-val { font-size: 2rem; }
+    .cd-sep { font-size: 1.5rem; }
+
+    /* Transport */
+    .transport-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* More grid */
+    .more-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Modals */
+    .modal {
+        max-width: 100%;
+        max-height: 95vh;
+        margin: var(--space-sm);
+    }
+    .modal-overlay {
+        padding: var(--space-sm);
+    }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+    .kpi-row {
+        grid-template-columns: 1fr;
+    }
+    .more-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .countdown-display {
+        gap: var(--space-sm);
+    }
+    .cd-val { font-size: 1.6rem; }
+    .parking-slots {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

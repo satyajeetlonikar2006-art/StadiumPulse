@@ -1,0 +1,201 @@
+/* ========================================
+   StadiumPulse — Admin Panel
+   ======================================== */
+
+.admin-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+.admin-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+}
+
+.admin-toggle {
+    display: flex;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+}
+.toggle-btn {
+    padding: 8px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+.toggle-btn:hover { color: var(--text-primary); }
+.toggle-btn.active {
+    background: rgba(0, 212, 255, 0.12);
+    color: var(--accent-blue);
+}
+
+/* Admin Grid */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.admin-card {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+.admin-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Broadcast */
+.broadcast-btns {
+    display: flex;
+    gap: 8px;
+}
+
+/* Gate Controls */
+.gate-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.gate-control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+.gate-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.gate-status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+}
+.gate-status-dot.open { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+.gate-status-dot.closed { background: var(--accent-red); box-shadow: 0 0 6px var(--accent-red); }
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+.toggle-switch.active { background: rgba(0, 255, 136, 0.3); }
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px; height: 18px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+.toggle-switch.active::after {
+    left: 23px;
+    background: var(--accent-green);
+    box-shadow: 0 0 8px var(--accent-green);
+}
+
+/* Evacuation */
+.evac-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+}
+.status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+}
+.status-dot.green { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+.status-dot.red { background: var(--accent-red); box-shadow: 0 0 6px var(--accent-red); animation: blink 1s infinite; }
+
+.evac-routes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: fadeInTab 0.4s ease;
+}
+.evac-route {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 59, 92, 0.06);
+    border: 1px solid rgba(255, 59, 92, 0.15);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: var(--accent-red);
+}
+.evac-route svg { width: 16px; height: 16px; }
+
+/* Incident Log */
+.incident-log {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.incident-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-sm);
+    animation: fadeInChat 0.3s ease;
+}
+.incident-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 55px;
+}
+.incident-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.incident-severity {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+.incident-severity.high { background: var(--accent-red); }
+.incident-severity.medium { background: var(--accent-amber); }
+.incident-severity.low { background: var(--accent-green); }

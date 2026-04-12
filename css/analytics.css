@@ -1,0 +1,98 @@
+/* ========================================
+   StadiumPulse — Analytics Dashboard
+   ======================================== */
+
+.analytics-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.analytics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.analytics-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+}
+
+/* KPI Row */
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-md);
+}
+
+.kpi-card {
+    padding: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    transition: transform var(--transition-normal);
+}
+.kpi-card:hover { transform: translateY(-4px); }
+
+.kpi-icon {
+    width: 48px; height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+}
+.kpi-icon svg { width: 24px; height: 24px; }
+.kpi-icon.blue { background: rgba(0, 212, 255, 0.12); color: var(--accent-blue); }
+.kpi-icon.green { background: rgba(0, 255, 136, 0.12); color: var(--accent-green); }
+.kpi-icon.amber { background: rgba(255, 170, 0, 0.12); color: var(--accent-amber); }
+.kpi-icon.red { background: rgba(255, 59, 92, 0.12); color: var(--accent-red); }
+.kpi-icon.cyan { background: rgba(6, 182, 212, 0.12); color: var(--accent-cyan); }
+
+.kpi-data {
+    display: flex;
+    flex-direction: column;
+}
+.kpi-value {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.kpi-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.chart-card {
+    padding: var(--space-lg);
+}
+.chart-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: var(--space-md);
+    color: var(--text-secondary);
+}
+.chart-card.full-width { grid-column: 1 / -1; }
+
+.heatmap-history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+.heatmap-history-header h3 { margin-bottom: 0; }
+
+canvas {
+    width: 100% !important;
+    max-height: 300px;
+}
