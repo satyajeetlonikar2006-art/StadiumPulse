@@ -1,8 +1,25 @@
 /* ========================================
-   StadiumPulse — Responsive Breakpoints
+   StadiumPulse — Complete Responsive System
+   Mobile-first → Tablet → Desktop
    ======================================== */
 
-/* Tablet */
+/* ─── VIEWPORT META HELPER ─── */
+@viewport { width: device-width; }
+
+/* ─── LARGE DESKTOP (1440px+) ─── */
+@media (min-width: 1440px) {
+    .heatmap-layout {
+        grid-template-columns: 1fr 420px;
+    }
+    .queue-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .kpi-row {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* ─── TABLET LANDSCAPE (1024px) ─── */
 @media (max-width: 1024px) {
     .heatmap-layout {
         grid-template-columns: 1fr;
@@ -22,100 +39,655 @@
     .planner-grid {
         grid-template-columns: 1fr;
     }
+    .queue-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .parking-zones {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-/* Mobile */
+/* ─── TABLET PORTRAIT (768px) ─── */
 @media (max-width: 768px) {
     :root {
         --navbar-height: 56px;
         --tabbar-height: 46px;
     }
 
+    html {
+        font-size: 15px;
+    }
+
+    /* ── Main Content ── */
     .main-content {
         padding: var(--space-md);
     }
 
-    /* Navbar */
+    /* ── Navbar ── */
     .navbar {
         padding: 0 var(--space-md);
+        gap: var(--space-sm);
     }
-    .navbar-center { display: none; }
-    .nav-datetime { display: none; }
-    .logo-text { font-size: 1.1rem; }
+    .navbar-center {
+        display: none;
+    }
+    .nav-datetime {
+        display: none;
+    }
+    .logo-text {
+        font-size: 1.05rem;
+    }
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+    }
+    .logo-lucide {
+        width: 18px;
+        height: 18px;
+    }
+    .live-indicator {
+        padding: 3px 8px;
+    }
+    .live-text {
+        font-size: 0.6rem;
+        letter-spacing: 1px;
+    }
+    .nav-btn {
+        padding: 6px 8px;
+    }
+    .lang-label {
+        display: none;
+    }
 
-    /* Tab bar scrollable */
+    /* ── Tab Bar ── */
     .tab-bar {
         padding: 0 var(--space-sm);
         gap: 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar {
+        display: none;
     }
     .tab-btn {
         padding: 6px 12px;
         font-size: 0.78rem;
+        min-width: fit-content;
     }
-    .tab-btn span { display: none; }
+    .tab-btn span {
+        display: none;
+    }
 
-    /* Queue */
+    /* ── Heatmap / Stadium Map ── */
+    .heatmap-layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    .map-container {
+        padding: var(--space-md);
+    }
+    .stadium-map-wrapper {
+        min-height: 280px;
+    }
+    #stadium-svg {
+        max-height: 320px;
+    }
+    .map-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+    .map-header h2 {
+        font-size: 1rem;
+    }
+    .map-legend {
+        gap: var(--space-sm);
+        font-size: 0.72rem;
+        flex-wrap: wrap;
+    }
+    .map-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        font-size: 0.75rem;
+    }
+
+    /* ── Assistant Panel ── */
+    .assistant-panel {
+        padding: var(--space-md);
+        max-height: none;
+    }
+    .assistant-header h2 {
+        font-size: 1rem;
+    }
+
+    /* ── Queue Grid ── */
     .queue-grid {
         grid-template-columns: 1fr;
     }
+    .queue-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .queue-filter-bar {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .queue-filter-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .queue-card {
+        padding: var(--space-md);
+    }
+    .queue-wait-value {
+        font-size: 1.6rem;
+    }
+    .prediction-banner {
+        padding: 10px 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
 
-    /* KPIs */
+    /* ── KPIs ── */
     .kpi-row {
         grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
     }
     .kpi-card {
         padding: var(--space-md);
     }
-    .kpi-value { font-size: 1.1rem; }
+    .kpi-value {
+        font-size: 1.1rem;
+    }
 
-    /* Input rows */
+    /* ── Input rows ── */
     .input-row {
         grid-template-columns: 1fr;
     }
 
-    /* Quick actions */
+    /* ── Quick Actions ── */
     .quick-actions {
         grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+    .action-btn {
+        padding: 10px 6px;
+        font-size: 0.7rem;
     }
 
-    /* Countdown */
-    .cd-val { font-size: 2rem; }
-    .cd-sep { font-size: 1.5rem; }
+    /* ── Countdown ── */
+    .cd-val {
+        font-size: 2rem;
+    }
+    .cd-sep {
+        font-size: 1.5rem;
+    }
 
-    /* Transport */
+    /* ── Transport ── */
     .transport-options {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* More grid */
+    /* ── More Grid ── */
     .more-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Modals */
-    .modal {
-        max-width: 100%;
-        max-height: 95vh;
-        margin: var(--space-sm);
-    }
+    /* ── Modals ── */
     .modal-overlay {
         padding: var(--space-sm);
+        align-items: flex-end;
+    }
+    .modal {
+        max-width: 100%;
+        max-height: 90vh;
+        margin: 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .modal-header {
+        padding: var(--space-md);
+    }
+    .modal-body {
+        padding: var(--space-md);
+    }
+    .modal-footer {
+        padding: var(--space-sm) var(--space-md);
+    }
+    .modal.modal-lg {
+        max-width: 100%;
+    }
+    .share-code {
+        font-size: 1.6rem;
+    }
+    .rating-stars {
+        font-size: 2rem;
+    }
+
+    /* ── Parking ── */
+    .parking-zones {
+        grid-template-columns: 1fr;
+    }
+    .parking-slots {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    /* ── Chatbot ── */
+    .chat-messages {
+        max-height: 150px;
+    }
+
+    /* ── Toast ── */
+    #toast-container {
+        right: var(--space-sm);
+        left: var(--space-sm);
+        max-width: none;
+    }
+    .toast {
+        font-size: 0.8rem;
+        padding: 10px 14px;
+    }
+
+    /* ── Admin ── */
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+
+    /* ── Analytics ── */
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* ── Planner ── */
+    .planner-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* ── Leaderboard ── */
+    .lb-item {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    .lb-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+    }
+    .lb-name {
+        font-size: 0.82rem;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.82rem;
+    }
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    /* ── Nearby items ── */
+    .nearby-item {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    .nearby-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* ── Upgrade items ── */
+    .upgrade-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+
+    /* ── Food Menu ── */
+    .food-item {
+        padding: 8px 10px;
+    }
+    .food-item-name {
+        font-size: 0.82rem;
     }
 }
 
-/* Small mobile */
+/* ─── SMALL MOBILE (480px) ─── */
 @media (max-width: 480px) {
+    :root {
+        --navbar-height: 52px;
+        --tabbar-height: 42px;
+    }
+
+    html {
+        font-size: 14px;
+    }
+
+    /* ── Navbar compact ── */
+    .navbar {
+        padding: 0 var(--space-sm);
+    }
+    .logo-text {
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+    }
+    .logo-lucide {
+        width: 16px;
+        height: 16px;
+    }
+    .live-indicator {
+        padding: 2px 6px;
+    }
+    .live-dot {
+        width: 6px;
+        height: 6px;
+    }
+    .live-text {
+        font-size: 0.55rem;
+    }
+    .nav-controls {
+        gap: 0;
+    }
+    .nav-btn {
+        padding: 6px;
+    }
+
+    /* ── Tab Bar ultra compact ── */
+    .tab-btn {
+        padding: 5px 10px;
+        font-size: 0.72rem;
+    }
+    .tab-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* ── Content ── */
+    .main-content {
+        padding: var(--space-sm);
+    }
+
+    /* ── KPIs stacked ── */
     .kpi-row {
         grid-template-columns: 1fr;
     }
-    .more-grid {
+    .kpi-card {
+        padding: var(--space-sm) var(--space-md);
+    }
+    .kpi-value {
+        font-size: 1rem;
+    }
+
+    /* ── Queue ── */
+    .queue-card {
+        padding: var(--space-sm) var(--space-md);
+    }
+    .queue-wait-value {
+        font-size: 1.4rem;
+    }
+    .queue-card-title {
+        font-size: 0.85rem;
+    }
+    .queue-type-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* ── Stadium Map ── */
+    .stadium-map-wrapper {
+        min-height: 220px;
+    }
+    #stadium-svg {
+        max-height: 260px;
+    }
+    .zone-label {
+        font-size: 9px;
+    }
+    .zone-capacity {
+        font-size: 7px;
+    }
+
+    /* ── Quick Actions 2-col on small ── */
+    .quick-actions {
         grid-template-columns: repeat(2, 1fr);
     }
+    .action-btn {
+        padding: 8px 4px;
+        font-size: 0.65rem;
+    }
+    .action-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* ── Countdown ── */
     .countdown-display {
         gap: var(--space-sm);
     }
-    .cd-val { font-size: 1.6rem; }
+    .cd-val {
+        font-size: 1.6rem;
+    }
+    .cd-label {
+        font-size: 0.6rem;
+    }
+
+    /* ── More grid ── */
+    .more-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* ── Parking ── */
     .parking-slots {
         grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* ── Chatbot ── */
+    .chat-bubble {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+        max-width: 92%;
+    }
+    .chat-avatar {
+        width: 24px;
+        height: 24px;
+    }
+    .chat-messages {
+        max-height: 120px;
+    }
+
+    /* ── Modals fullscreen ── */
+    .modal-overlay {
+        padding: 0;
+    }
+    .modal {
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+    }
+    .modal-header h3 {
+        font-size: 0.95rem;
+    }
+
+    /* ── Alert items ── */
+    .alert-item {
+        font-size: 0.72rem;
+    }
+
+    /* ── Prediction banner ── */
+    .prediction-banner {
+        padding: 8px 12px;
+    }
+    #prediction-text {
+        font-size: 0.8rem;
+    }
+
+    /* ── Filter bar scroll ── */
+    .queue-filter-bar {
+        flex-wrap: nowrap;
+    }
+    .filter-btn {
+        padding: 5px 12px;
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+    /* ── AR placeholder ── */
+    .ar-camera-frame {
+        width: 150px;
+        height: 150px;
+    }
+
+    /* ── Font sizes ── */
+    .section-icon {
+        width: 18px;
+        height: 18px;
+    }
+    .map-header h2 {
+        font-size: 0.9rem;
+    }
+
+    /* ── Toast fullwidth ── */
+    .toast {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        gap: 8px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+        padding: 7px 14px;
+        font-size: 0.78rem;
+    }
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.72rem;
+    }
+}
+
+/* ─── EXTRA SMALL (360px — older phones) ─── */
+@media (max-width: 360px) {
+    .logo-text {
+        font-size: 0.85rem;
+    }
+    .live-indicator {
+        display: none;
+    }
+    .tab-btn {
+        padding: 4px 8px;
+        font-size: 0.68rem;
+    }
+    .kpi-card {
+        padding: var(--space-sm);
+    }
+    .quick-actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+    }
+    .modal-header h3 {
+        font-size: 0.85rem;
+    }
+}
+
+/* ─── TOUCH DEVICE ENHANCEMENTS ─── */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase tap targets */
+    .tab-btn {
+        min-height: 44px;
+    }
+    .nav-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .action-btn {
+        min-height: 48px;
+    }
+    .filter-btn {
+        min-height: 36px;
+    }
+    .notify-btn {
+        min-height: 36px;
+        padding: 6px 14px;
+    }
+    .food-add-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Remove hover transform effects on touch */
+    .queue-card:hover {
+        transform: none;
+    }
+    .glass-card:hover {
+        border-color: var(--glass-border);
+        box-shadow: var(--glass-shadow);
+    }
+    .action-btn:hover {
+        transform: none;
+    }
+    .btn-primary:hover {
+        transform: none;
+    }
+}
+
+/* ─── LANDSCAPE PHONE ─── */
+@media (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --navbar-height: 44px;
+        --tabbar-height: 36px;
+    }
+    .navbar {
+        padding: 0 var(--space-md);
+    }
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+    }
+    .stadium-map-wrapper {
+        min-height: 200px;
+    }
+    #stadium-svg {
+        max-height: 220px;
+    }
+    .modal {
+        max-height: 100vh;
+    }
+    .main-content {
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
+/* ─── PRINT STYLES ─── */
+@media print {
+    .navbar,
+    .tab-bar,
+    .chatbot-section,
+    .nav-controls,
+    #toast-container {
+        display: none !important;
+    }
+    .main-content {
+        margin-top: 0;
+        padding: 0;
+    }
+    body {
+        background: #fff;
+        color: #000;
+    }
+    .glass-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        box-shadow: none;
     }
 }
