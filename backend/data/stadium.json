@@ -1,0 +1,68 @@
+{
+  "venue": "Wankhede Stadium, Mumbai",
+  "capacity": 30500,
+  "zones": {
+    "north": {
+      "id": "north",
+      "name": "Tata Pavilion (North Stand)",
+      "capacity": 8000,
+      "description": "Premium view from behind the bowler's arm"
+    },
+    "south": {
+      "id": "south",
+      "name": "Garware Pavilion (South Stand)",
+      "capacity": 8000,
+      "description": "Members and premium seating area"
+    },
+    "east": {
+      "id": "east",
+      "name": "Sunil Gavaskar Stand (East)",
+      "capacity": 6000,
+      "description": "General admission, great atmosphere"
+    },
+    "west": {
+      "id": "west",
+      "name": "Vijay Merchant Stand (West)",
+      "capacity": 6000,
+      "description": "General admission, close to sea breeze"
+    },
+    "vip": {
+      "id": "vip",
+      "name": "VCA Box / MCA Pavilion",
+      "capacity": 2000,
+      "description": "Ultra-premium boxes and hospitality"
+    },
+    "media": {
+      "id": "media",
+      "name": "Press Box",
+      "capacity": 500,
+      "description": "Media center for broadcasters and journalists"
+    }
+  },
+  "evacuationRoutes": [
+    {
+      "id": "evac_n1",
+      "zone": "north",
+      "gateObj": "gate_a",
+      "description": "Exit via stairwell N1 straight to Marine Drive side Gate A"
+    },
+    {
+      "id": "evac_s1",
+      "zone": "south",
+      "gateObj": "gate_b",
+      "description": "Exit via Garware ground floor to 'D' Road Gate B"
+    },
+    {
+      "id": "evac_e1",
+      "zone": "east",
+      "gateObj": "gate_c",
+      "description": "Exit via East staircases to ground level and Gate C (Churchgate side)"
+    },
+    {
+      "id": "evac_w1",
+      "zone": "west",
+      "gateObj": "gate_d",
+      "description": "Exit via West grandstand to upper levels and Gate D"
+    }
+  ]
+}

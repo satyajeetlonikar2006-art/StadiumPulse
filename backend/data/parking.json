@@ -1,0 +1,34 @@
+[
+  {
+    "zoneId": "P1",
+    "name": "P1 North (Marine Drive)",
+    "capacity": 300,
+    "level": "Ground",
+    "nearestGate": "Gate 1",
+    "prefix": "N"
+  },
+  {
+    "zoneId": "P2",
+    "name": "P2 South (D Road)",
+    "capacity": 300,
+    "level": "Basement",
+    "nearestGate": "Gate 2",
+    "prefix": "S"
+  },
+  {
+    "zoneId": "P3",
+    "name": "P3 VIP Zone",
+    "capacity": 150,
+    "level": "VIP Basement",
+    "nearestGate": "MCA Pavilion",
+    "prefix": "V"
+  },
+  {
+    "zoneId": "P4",
+    "name": "P4 Media & Broadcast",
+    "capacity": 50,
+    "level": "Ground",
+    "nearestGate": "Press Box Entry",
+    "prefix": "M"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "stallId": "food_f1",
+    "items": [
+      { "id": "item_1", "name": "Vada Pav", "price": 40, "veg": true, "calories": 250 },
+      { "id": "item_2", "name": "Pav Bhaji", "price": 120, "veg": true, "calories": 400 },
+      { "id": "item_3", "name": "Samosa (2 pcs)", "price": 50, "veg": true, "calories": 300 },
+      { "id": "item_4", "name": "Masala Chai", "price": 30, "veg": true, "calories": 80 },
+      { "id": "item_5", "name": "Cold Drink (500ml)", "price": 60, "veg": true, "calories": 150 },
+      { "id": "item_6", "name": "Water Bottle", "price": 20, "veg": true, "calories": 0 },
+      { "id": "item_7", "name": "Butter Milk", "price": 30, "veg": true, "calories": 50 },
+      { "id": "item_8", "name": "Bhel Puri", "price": 60, "veg": true, "calories": 180 }
+    ]
+  },
+  {
+    "stallId": "food_f4",
+    "items": [
+      { "id": "item_9", "name": "Chicken Biryani", "price": 250, "veg": false, "calories": 600 },
+      { "id": "item_10", "name": "Veg Biryani", "price": 180, "veg": true, "calories": 450 },
+      { "id": "item_11", "name": "Chicken Roll", "price": 150, "veg": false, "calories": 350 },
+      { "id": "item_12", "name": "Paneer Roll", "price": 130, "veg": true, "calories": 300 },
+      { "id": "item_13", "name": "Cold Drink (500ml)", "price": 60, "veg": true, "calories": 150 },
+      { "id": "item_14", "name": "Water Bottle", "price": 20, "veg": true, "calories": 0 },
+      { "id": "item_15", "name": "Brownie", "price": 100, "veg": true, "calories": 400 },
+      { "id": "item_16", "name": "Ice Cream", "price": 80, "veg": true, "calories": 200 }
+    ]
+  }
+]

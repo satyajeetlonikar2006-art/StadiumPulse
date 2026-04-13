@@ -1,0 +1,21 @@
+[
+  { "id": "gate_a", "name": "Gate 1 - Marine Drive", "type": "gate", "zone": "north", "capacity": 200, "processingRate": 20 },
+  { "id": "gate_b", "name": "Gate 2 - D Road", "type": "gate", "zone": "south", "capacity": 200, "processingRate": 20 },
+  { "id": "gate_c", "name": "Gate 3 - Churchgate", "type": "gate", "zone": "east", "capacity": 200, "processingRate": 20 },
+  { "id": "gate_d", "name": "Gate 4 - University", "type": "gate", "zone": "west", "capacity": 200, "processingRate": 20 },
+  
+  { "id": "food_f1", "name": "Mumbai Street Food", "type": "food", "zone": "north", "capacity": 50, "processingRate": 4 },
+  { "id": "food_f2", "name": "Classic Burgers & Fries", "type": "food", "zone": "north", "capacity": 50, "processingRate": 4 },
+  { "id": "food_f3", "name": "Spicy Chaat Corner", "type": "food", "zone": "south", "capacity": 50, "processingRate": 4 },
+  { "id": "food_f4", "name": "Biryani Express", "type": "food", "zone": "east", "capacity": 50, "processingRate": 4 },
+  { "id": "food_f5", "name": "Pizza Point", "type": "food", "zone": "west", "capacity": 40, "processingRate": 4 },
+  { "id": "food_f6", "name": "Refreshments & Drinks", "type": "food", "zone": "vip", "capacity": 40, "processingRate": 4 },
+  
+  { "id": "wc_w1", "name": "North Washrooms", "type": "washroom", "zone": "north", "capacity": 30, "processingRate": 8, "accessible": true },
+  { "id": "wc_w2", "name": "South Washrooms", "type": "washroom", "zone": "south", "capacity": 30, "processingRate": 8, "accessible": true },
+  { "id": "wc_w3", "name": "East Washrooms", "type": "washroom", "zone": "east", "capacity": 30, "processingRate": 8, "accessible": false },
+  { "id": "wc_w4", "name": "West Washrooms", "type": "washroom", "zone": "west", "capacity": 30, "processingRate": 8, "accessible": true },
+  
+  { "id": "parking_p1", "name": "North Parking block", "type": "parking", "zone": "north", "capacity": 300, "processingRate": 15 },
+  { "id": "parking_p2", "name": "South Parking block", "type": "parking", "zone": "south", "capacity": 300, "processingRate": 15 }
+]
