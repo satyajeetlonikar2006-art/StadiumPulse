@@ -43,6 +43,7 @@ const createSchema = () => {
       phase TEXT DEFAULT 'PRE_MATCH',
       match_minute INTEGER DEFAULT 0,
       is_active INTEGER DEFAULT 0,
+      cricapi_match_id TEXT,
       created_at INTEGER
     );
 
@@ -203,6 +204,19 @@ const createSchema = () => {
     CREATE INDEX IF NOT EXISTS idx_incidents_event_status ON incidents(event_id, status);
     CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id, event_id);
     CREATE INDEX IF NOT EXISTS idx_community_tips_event ON community_tips(event_id, created_at);
+    CREATE TABLE IF NOT EXISTS stadiums (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      city TEXT NOT NULL,
+      state TEXT,
+      lat REAL,
+      lng REAL,
+      capacity INTEGER,
+      geofenceRadius INTEGER,
+      wifiSsid TEXT,
+      timezone TEXT,
+      is_active INTEGER DEFAULT 1
+    );
   `);
 };
 
@@ -232,6 +246,19 @@ const seedData = () => {
   
   const insertIncident = db.prepare('INSERT INTO incidents (id, event_id, type, severity, zone_id, description, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
   insertIncident.run('inc_1', 'evt_1', 'MEDICAL', 3, 'east', 'Fan feels dizzy near East Gate', 'NEW', now - 6000);
+
+  const stadiumsCount = db.prepare('SELECT count(*) as count FROM stadiums').get().count;
+  if (stadiumsCount === 0) {
+    const insertStadium = db.prepare('INSERT INTO stadiums (id, name, city, state, lat, lng, capacity, geofenceRadius, wifiSsid, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    insertStadium.run('wankhede', 'Wankhede Stadium', 'Mumbai', 'Maharashtra', 18.9388, 72.8254, 33108, 400, 'Wankhede_Guest', 'Asia/Kolkata');
+    insertStadium.run('eden_gardens', 'Eden Gardens', 'Kolkata', 'West Bengal', 22.5645, 88.3433, 68000, 500, null, null);
+    insertStadium.run('chinnaswamy', 'M. Chinnaswamy Stadium', 'Bengaluru', 'Karnataka', 12.9788, 77.5996, 40000, 380, null, null);
+    insertStadium.run('chepauk', 'MA Chidambaram Stadium', 'Chennai', 'Tamil Nadu', 13.0627, 80.2791, 50000, 420, null, null);
+    insertStadium.run('mohali', 'Punjab Cricket Association Stadium', 'Mohali', 'Punjab', 30.6895, 76.7167, 26000, 350, null, null);
+    insertStadium.run('rajiv_gandhi', 'Rajiv Gandhi Intl Cricket Stadium', 'Hyderabad', 'Telangana', 17.4065, 78.5449, 55000, 450, null, null);
+    insertStadium.run('sawai_mansingh', 'Sawai Mansingh Stadium', 'Jaipur', 'Rajasthan', 26.8945, 75.8014, 30000, 360, null, null);
+    insertStadium.run('narendra_modi', 'Narendra Modi Stadium', 'Ahmedabad', 'Gujarat', 23.0902, 72.5960, 132000, 600, null, null);
+  }
 
   console.log('Seed complete.');
 };

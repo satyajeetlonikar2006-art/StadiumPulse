@@ -70,6 +70,40 @@ const init = (server) => {
     });
   }, 30000);
 
+  // Weather update every 10 minutes
+  const weatherService = require('./services/weather.service');
+  setInterval(async () => {
+    try {
+      const weather = await weatherService.getWeather();
+      broadcast({
+        type: 'WEATHER_UPDATE',
+        payload: weather,
+        timestamp: Date.now()
+      });
+    } catch (err) {
+      console.error('[WS Weather] error:', err.message);
+    }
+  }, 10 * 60 * 1000);
+
+  // Match score update every 30 seconds
+  const matchService = require('./services/match.service');
+  const db = require('./config/database');
+  setInterval(async () => {
+    try {
+      const activeEvent = db.getActiveEvent();
+      if (!activeEvent?.cricapi_match_id) return;
+      
+      const score = await matchService.getLiveScore(activeEvent.cricapi_match_id);
+      broadcast({
+        type: 'MATCH_UPDATE',
+        payload: score,
+        timestamp: Date.now()
+      });
+    } catch (err) {
+      console.error('[WS Match] error:', err.message);
+    }
+  }, 30000);
+
   console.log('🔗 WebSocket server initialized');
 };
 

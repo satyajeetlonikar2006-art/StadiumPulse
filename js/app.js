@@ -63,6 +63,7 @@
         Planner.init();
         Modals.init();
         Chatbot.init();
+        LiveData.init();
 
         // Load saved preferences
         loadPreferences();

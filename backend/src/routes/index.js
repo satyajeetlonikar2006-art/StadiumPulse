@@ -17,6 +17,8 @@ router.use('/weather', require('./weather.routes'));
 router.use('/users', require('./users.routes'));
 router.use('/lost-found', require('./lost-found.routes'));
 router.use('/feedback', require('./feedback.routes'));
+router.use('/stadiums', require('./stadiums.routes'));
+router.use('/match', require('./match.routes'));
 
 router.get('/health', (req, res) => {
   res.json({ success: true, message: 'StadiumPulse API is running' });

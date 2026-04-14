@@ -43,23 +43,26 @@ exports.cancelNotify = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const queueService = require('../services/queue.service');
+
 exports.joinQueue = async (req, res, next) => {
   try {
-    const data = await facilitiesService.joinQueue(req.params.id, req.user.id);
+    const data = queueService.joinQueue(req.params.id, req.user.id, 'gate');
     success(res, data);
   } catch (err) { next(err); }
 };
 
 exports.leaveQueue = async (req, res, next) => {
   try {
-    const data = await facilitiesService.leaveQueue(req.params.id, req.user.id);
-    success(res, data);
+    const data = queueService.leaveQueue(req.params.id, req.user.id);
+    success(res, { message: 'Left queue', success: data });
   } catch (err) { next(err); }
 };
 
 exports.queueStatus = async (req, res, next) => {
   try {
-    const data = await facilitiesService.queueStatus(req.params.id, req.user.id);
+    const data = queueService.getPosition(req.params.id, req.user.id);
     success(res, data);
   } catch (err) { next(err); }
 };
+

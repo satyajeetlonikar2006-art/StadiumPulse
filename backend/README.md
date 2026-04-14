@@ -27,3 +27,24 @@ This project consists of an Express HTTP server for RESTful endpoints and a sepa
 - `DB_PATH`: path to sqlite database (default ./stadiumpulse.sqlite)
 - `JWT_SECRET`: Secret used for signing auth tokens
 - `SIMULATION_TICK_RATE_MS`: Speed of the stadium simulation loops (default 5000ms)
+
+## Real Data Sources
+
+| Feature           | Source         | Cost | API Key? |
+|-------------------|---------------|------|----------|
+| Live weather      | wttr.in        | Free | No       |
+| Stadium detection | GPS geofence   | Free | No       |
+| Match score       | CricAPI        | Free | Yes*     |
+| Queue times       | Virtual system | Free | No       |
+
+*CricAPI free tier: 100 calls/day
+ Get key at: https://cricapi.com
+ Leave CRICAPI_KEY blank = uses simulation fallback
+
+## Getting CricAPI Key (2 minutes)
+1. Go to cricapi.com
+2. Click "Sign Up Free"  
+3. Verify email
+4. Copy API key from dashboard
+5. Add to .env: CRICAPI_KEY=your_key_here
+6. Restart server — live scores now real
