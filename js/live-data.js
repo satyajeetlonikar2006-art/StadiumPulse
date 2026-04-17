@@ -18,9 +18,8 @@ const LiveData = (() => {
     // ---- FEATURE 1: LIVE WEATHER ----
     async function fetchLiveWeather() {
         try {
-            const res = await fetch(`${API_BASE}/weather?city=Mumbai`);
-            const json = await res.json();
-            if (!json.success) return;
+            const json = await authFetch(`${API_BASE}/weather?city=Mumbai`);
+            if (!json || !json.success) return;
             const w = json.data;
             updateWeatherWidget(w);
         } catch (err) {
@@ -58,7 +57,7 @@ const LiveData = (() => {
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
                 try {
-                    const res = await fetch(`${API_BASE}/stadiums/detect`, {
+                    const json = await authFetch(`${API_BASE}/stadiums/detect`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -66,8 +65,7 @@ const LiveData = (() => {
                             lng: pos.coords.longitude
                         })
                     });
-                    const json = await res.json();
-                    if (!json.success) return;
+                    if (!json || !json.success) return;
                     const { stadium } = json.data;
 
                     if (stadium) {
@@ -100,7 +98,7 @@ const LiveData = (() => {
     // ---- FEATURE 3 & 4: WEBSOCKET LIVE UPDATES ----
     function connectWebSocket() {
         try {
-            const wsUrl = `ws://localhost:5000`;
+            const wsUrl = `ws://localhost:5000?token=` + getToken();
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {

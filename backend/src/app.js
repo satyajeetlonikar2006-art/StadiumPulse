@@ -4,6 +4,11 @@ const compression = require('compression');
 const cors = require('cors');
 const config = require('./config');
 
+const session      = require('express-session');
+const passport     = require('passport');
+const initPassport = require('./config/passport');
+const AuthService  = require('./services/auth.service');
+
 const { loggerMiddleware } = require('./middleware/logger');
 const { apiLimiter } = require('./middleware/rateLimit');
 const errorHandler = require('./middleware/errorHandler');
@@ -23,6 +28,19 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(session({
+  secret:            process.env.SESSION_SECRET || 'stadium_session_secret',
+  resave:            false,
+  saveUninitialized: false,
+  cookie: {
+    secure:   process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge:   24 * 60 * 60 * 1000 // 1 day
+  }
+}));
+
+app.use(passport.initialize());
+
 // 4 & 5. Body Parsers
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -32,6 +50,11 @@ app.use(loggerMiddleware);
 
 // 7. Global API Rate Limiter
 app.use('/api', apiLimiter);
+
+// Initialize passport with DB and expose AuthService
+const db = require('./config/database').getDb();
+initPassport(db);
+app.locals.authService = new AuthService(db);
 
 // 8. Mount all routes
 app.use('/api', routes);

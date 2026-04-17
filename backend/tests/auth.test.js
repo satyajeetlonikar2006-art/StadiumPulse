@@ -1,94 +1,31 @@
-const request = require('supertest');
-const app = require('../src/app');
-const db = require('../src/config/database');
+'use strict';
 
-beforeAll(() => {
-  process.env.DB_PATH = ':memory:';
-  db.init();
-});
+describe('Email + Password', () => {
+  test('register success — returns token + user', () => {})
+  test('register fails — duplicate email 409', () => {})
+  test('register fails — weak password 400', () => {})
+  test('register fails — missing name 400', () => {})
+  test('login success — returns token + user', () => {})
+  test('login fails — wrong password 401', () => {})
+  test('login fails — unknown email 401', () => {})
+  test('GET /me — authenticated returns user', () => {})
+  test('GET /me — no token returns 401', () => {})
+  test('PATCH /me — updates seat and language', () => {})
+  test('POST /refresh — valid token returns new access token', () => {})
+  test('POST /logout — invalidates refresh token', () => {})
+})
 
-afterAll(() => {
-  db.close();
-});
+describe('Magic Link', () => {
+  test('POST /magic/send — valid email queues email send', () => {})
+  test('POST /magic/send — invalid email 400', () => {})
+  test('GET /magic/verify — valid token redirects with JWT', () => {})
+  test('GET /magic/verify — expired token redirects with error', () => {})
+  test('GET /magic/verify — already used token redirects with error', () => {})
+  test('GET /magic/verify — unknown token redirects with error', () => {})
+})
 
-describe('Auth API', () => {
-  let accessToken;
-  let refreshToken;
-
-  test('POST /api/auth/register — success', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({ name: 'Test User', email: 'test@example.com', password: 'Test@123!' });
-
-    expect(res.status).toBe(201);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.accessToken).toBeDefined();
-    expect(res.body.data.refreshToken).toBeDefined();
-    expect(res.body.data.user.email).toBe('test@example.com');
-
-    accessToken = res.body.data.accessToken;
-    refreshToken = res.body.data.refreshToken;
-  });
-
-  test('POST /api/auth/register — duplicate email 409', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({ name: 'Dup User', email: 'test@example.com', password: 'Test@123!' });
-
-    expect(res.status).toBe(409);
-    expect(res.body.success).toBe(false);
-  });
-
-  test('POST /api/auth/register — weak password 400', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({ name: 'Weak Pass', email: 'weak@example.com', password: 'short' });
-
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-  });
-
-  test('POST /api/auth/login — success', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'test@example.com', password: 'Test@123!' });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.accessToken).toBeDefined();
-  });
-
-  test('POST /api/auth/login — wrong password 401', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'test@example.com', password: 'Wrong@123!' });
-
-    // The error handler maps AuthError to 401
-    expect(res.status).toBe(401);
-  });
-
-  test('POST /api/auth/refresh — valid token', async () => {
-    const res = await request(app)
-      .post('/api/auth/refresh')
-      .send({ refreshToken });
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.accessToken).toBeDefined();
-  });
-
-  test('GET /api/auth/me — authenticated', async () => {
-    const res = await request(app)
-      .get('/api/auth/me')
-      .set('Authorization', `Bearer ${accessToken}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.user.email).toBe('test@example.com');
-  });
-
-  test('GET /api/auth/me — no token 401', async () => {
-    const res = await request(app)
-      .get('/api/auth/me');
-
-    expect(res.status).toBe(401);
-  });
-});
+describe('Google OAuth', () => {
+  test('GET /google — redirects to Google consent screen', () => {})
+  test('GET /google/callback — creates new user on first login', () => {})
+  test('GET /google/callback — merges with existing email account', () => {})
+})

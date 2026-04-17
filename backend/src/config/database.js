@@ -192,10 +192,34 @@ const createSchema = () => {
     );
 
     CREATE TABLE IF NOT EXISTS refresh_tokens (
-      token TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
+      token      TEXT PRIMARY KEY,
+      user_id    TEXT NOT NULL,
       expires_at INTEGER NOT NULL,
-      created_at INTEGER
+      created_at INTEGER DEFAULT (strftime('%s','now')),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS magic_links (
+      token      TEXT PRIMARY KEY,
+      user_id    TEXT NOT NULL,
+      email      TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      used       INTEGER DEFAULT 0,
+      created_at INTEGER DEFAULT (strftime('%s','now')),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS oauth_accounts (
+      id           TEXT PRIMARY KEY,
+      user_id      TEXT NOT NULL,
+      provider     TEXT NOT NULL,
+      provider_id  TEXT NOT NULL,
+      email        TEXT NOT NULL,
+      name         TEXT,
+      avatar       TEXT,
+      created_at   INTEGER DEFAULT (strftime('%s','now')),
+      UNIQUE(provider, provider_id),
+      FOREIGN KEY(user_id) REFERENCES users(id)
     );
 
     CREATE INDEX IF NOT EXISTS idx_zone_snapshots_event_time ON zone_snapshots(event_id, timestamp);
@@ -204,6 +228,14 @@ const createSchema = () => {
     CREATE INDEX IF NOT EXISTS idx_incidents_event_status ON incidents(event_id, status);
     CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id, event_id);
     CREATE INDEX IF NOT EXISTS idx_community_tips_event ON community_tips(event_id, created_at);
+    
+    CREATE INDEX IF NOT EXISTS idx_magic_links_token
+      ON magic_links(token, expires_at);
+    CREATE INDEX IF NOT EXISTS idx_oauth_provider
+      ON oauth_accounts(provider, provider_id);
+    CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user
+      ON refresh_tokens(user_id);
+
     CREATE TABLE IF NOT EXISTS stadiums (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,

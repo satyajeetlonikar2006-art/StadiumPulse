@@ -48,3 +48,30 @@ This project consists of an Express HTTP server for RESTful endpoints and a sepa
 4. Copy API key from dashboard
 5. Add to .env: CRICAPI_KEY=your_key_here
 6. Restart server — live scores now real
+
+## Authentication Setup
+
+### 1. Email + Password
+Works immediately after npm install.
+Test accounts created by seed:
+  organizer@stadiumpulse.com / Stadium@123
+  attendee@stadiumpulse.com  / Stadium@123
+
+### 2. Google OAuth (5 steps)
+1. Go to console.cloud.google.com
+2. New Project → name it "StadiumPulse"
+3. APIs & Services → OAuth consent screen
+   → External → fill App name + email → Save
+4. APIs & Services → Credentials
+   → Create Credentials → OAuth 2.0 Client ID
+   → Web Application
+   → Authorized redirect URIs:
+     http://localhost:5000/api/auth/google/callback
+5. Copy Client ID + Secret → paste in .env
+
+### 3. Magic Link via Gmail (3 steps)
+1. Go to myaccount.google.com
+2. Security → 2-Step Verification → turn ON
+3. Security → App Passwords
+   → App: Mail | Device: Other → name: StadiumPulse
+   → Copy 16-char password → paste as GMAIL_APP_PASS in .env

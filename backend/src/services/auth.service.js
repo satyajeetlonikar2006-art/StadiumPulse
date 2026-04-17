@@ -1,105 +1,249 @@
-const db = require('../config/database');
-const { hashPassword, comparePassword, generateId } = require('../utils/crypto');
-const { signAccessToken, signRefreshToken, verifyToken } = require('../utils/jwt');
-const config = require('../config');
+'use strict';
 
-class AuthError extends Error {
-  constructor(message) { super(message); this.name = 'AuthError'; }
-}
-class ConflictError extends Error {
-  constructor(message) { super(message); this.name = 'ConflictError'; }
-}
-class NotFoundError extends Error {
-  constructor(message) { super(message); this.name = 'NotFoundError'; }
-}
+const bcrypt      = require('bcryptjs');
+const crypto      = require('crypto');
+const { v4: uuid} = require('uuid');
+const jwt         = require('../utils/jwt');
+const emailSvc    = require('./email.service');
 
-exports.register = async (body) => {
-  const dbConn = db.getDb();
-  const existing = dbConn.prepare('SELECT id FROM users WHERE email = ?').get(body.email);
-  if (existing) throw new ConflictError('Email already in use');
-
-  const id = generateId();
-  const passHash = await hashPassword(body.password);
-  const now = Date.now();
-
-  let role = body.role || 'attendee';
-  
-  dbConn.prepare('INSERT INTO users (id, name, email, password_hash, role, seat, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-    .run(id, body.name, body.email, passHash, role, body.seat || null, now, now);
-
-  return generateTokensForUser(dbConn, id, { id, name: body.name, email: body.email, role, seat: body.seat });
-};
-
-exports.login = async (body) => {
-  const dbConn = db.getDb();
-  const user = dbConn.prepare('SELECT * FROM users WHERE email = ?').get(body.email);
-  if (!user) throw new AuthError('Invalid credentials');
-
-  const isValid = await comparePassword(body.password, user.password_hash);
-  if (!isValid) throw new AuthError('Invalid credentials');
-
-  dbConn.prepare('UPDATE users SET last_login = ? WHERE id = ?').run(Date.now(), user.id);
-
-  const u = { id: user.id, name: user.name, email: user.email, role: user.role, seat: user.seat };
-  return generateTokensForUser(dbConn, user.id, u);
-};
-
-exports.refresh = async (tokenStr) => {
-  const dbConn = db.getDb();
-  const stored = dbConn.prepare('SELECT * FROM refresh_tokens WHERE token = ?').get(tokenStr);
-  if (!stored || stored.expires_at < Date.now()) {
-    if (stored) dbConn.prepare('DELETE FROM refresh_tokens WHERE token = ?').run(tokenStr);
-    throw new AuthError('Invalid or expired refresh token');
+class AuthService {
+  constructor(db) {
+    this.db = db;
   }
 
-  const user = dbConn.prepare('SELECT id, name, email, role, seat FROM users WHERE id = ?').get(stored.user_id);
-  if (!user) throw new AuthError('User not found');
+  // ─── SHARED ─────────────────────────────────────
 
-  const payload = { id: user.id, name: user.name, email: user.email, role: user.role, seat: user.seat };
-  const accessToken = signAccessToken(payload);
-  
-  return { accessToken, expiresIn: config.jwt.expiresIn };
-};
+  _safeUser(user) {
+    // Never return password_hash to client
+    const { password_hash, ...safe } = user;
+    return safe;
+  }
 
-exports.logout = async (userId) => {
-  db.getDb().prepare('DELETE FROM refresh_tokens WHERE user_id = ?').run(userId);
-  return { message: 'Logged out' };
-};
+  _generateTokenPair(userId, role) {
+    const accessToken = jwt.signToken(
+      { id: userId, role },
+      process.env.JWT_EXPIRES_IN || '24h'
+    );
+    const refreshToken = crypto.randomBytes(40).toString('hex');
+    const expiresAt = Math.floor(Date.now() / 1000) + 7 * 24 * 3600;
 
-exports.getMe = async (userId) => {
-  const user = db.getDb().prepare('SELECT id, name, email, role, seat, language, accessibility, created_at, last_login FROM users WHERE id = ?').get(userId);
-  if (!user) throw new NotFoundError('User not found');
-  return { user };
-};
+    this.db.prepare(`
+      INSERT INTO refresh_tokens (token, user_id, expires_at)
+      VALUES (?, ?, ?)
+    `).run(refreshToken, userId, expiresAt);
 
-exports.updateMe = async (userId, body) => {
-  const u = await this.getMe(userId);
-  const dbConn = db.getDb();
-  
-  const name = body.name || u.user.name;
-  const seat = body.seat !== undefined ? body.seat : u.user.seat;
-  const language = body.language || u.user.language;
-  const accessibility = body.accessibility !== undefined ? body.accessibility : u.user.accessibility;
+    return { accessToken, refreshToken, expiresIn: 86400 };
+  }
 
-  dbConn.prepare('UPDATE users SET name = ?, seat = ?, language = ?, accessibility = ? WHERE id = ?')
-    .run(name, seat, language, accessibility, userId);
+  // ─── AUTH 1: EMAIL + PASSWORD ────────────────────
+
+  async register({ name, email, password, seat }) {
+    // Duplicate email check
+    const existing = this.db.prepare(
+      'SELECT id FROM users WHERE email = ?'
+    ).get(email);
+    if (existing) {
+      const err = new Error('An account with this email already exists');
+      err.code = 'CONFLICT'; throw err;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const userId = uuid();
+    const now = Math.floor(Date.now() / 1000);
+
+    this.db.prepare(`
+      INSERT INTO users
+        (id, name, email, password_hash, role, seat, created_at, last_login)
+      VALUES (?, ?, ?, ?, 'attendee', ?, ?, ?)
+    `).run(userId, name.trim(), email.toLowerCase(), 
+           passwordHash, seat || null, now, now);
+
+    const user = this.db.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).get(userId);
+
+    const tokens = this._generateTokenPair(userId, user.role);
+    return { user: this._safeUser(user), ...tokens };
+  }
+
+  async login({ email, password }) {
+    const user = this.db.prepare(
+      'SELECT * FROM users WHERE email = ?'
+    ).get(email.toLowerCase());
+
+    if (!user) {
+      const err = new Error('Invalid email or password');
+      err.code = 'UNAUTHORIZED'; throw err;
+    }
+
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) {
+      const err = new Error('Invalid email or password');
+      err.code = 'UNAUTHORIZED'; throw err;
+    }
+
+    this.db.prepare(
+      'UPDATE users SET last_login = ? WHERE id = ?'
+    ).run(Math.floor(Date.now() / 1000), user.id);
+
+    const tokens = this._generateTokenPair(user.id, user.role);
+    return { user: this._safeUser(user), ...tokens };
+  }
+
+  refreshToken(token) {
+    const now = Math.floor(Date.now() / 1000);
+    const record = this.db.prepare(`
+      SELECT * FROM refresh_tokens
+      WHERE token = ? AND expires_at > ?
+    `).get(token, now);
+
+    if (!record) {
+      const err = new Error('Invalid or expired refresh token');
+      err.code = 'UNAUTHORIZED'; throw err;
+    }
+
+    const user = this.db.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).get(record.user_id);
+
+    const accessToken = jwt.signToken(
+      { id: user.id, role: user.role },
+      process.env.JWT_EXPIRES_IN || '24h'
+    );
+    return { accessToken, expiresIn: 86400 };
+  }
+
+  logout(token) {
+    this.db.prepare(
+      'DELETE FROM refresh_tokens WHERE token = ?'
+    ).run(token);
+  }
+
+  // ─── AUTH 2: MAGIC LINK ──────────────────────────
+
+  async sendMagicLink(email) {
+    if (!emailSvc.isAvailable()) {
+      const err = new Error(
+        'Magic link is not configured on this server'
+      );
+      err.code = 'SERVICE_UNAVAILABLE'; throw err;
+    }
+
+    email = email.toLowerCase().trim();
+
+    // Find or create user
+    let user = this.db.prepare(
+      'SELECT * FROM users WHERE email = ?'
+    ).get(email);
+
+    if (!user) {
+      const userId = uuid();
+      const now = Math.floor(Date.now() / 1000);
+      this.db.prepare(`
+        INSERT INTO users
+          (id, name, email, password_hash, role, created_at)
+        VALUES (?, ?, ?, ?, 'attendee', ?)
+      `).run(
+        userId,
+        email.split('@')[0], // use email prefix as default name
+        email,
+        await bcrypt.hash(uuid(), 12),
+        now
+      );
+      user = this.db.prepare(
+        'SELECT * FROM users WHERE id = ?'
+      ).get(userId);
+    }
+
+    // Delete any existing unused tokens for this email
+    this.db.prepare(
+      'DELETE FROM magic_links WHERE email = ? AND used = 0'
+    ).run(email);
+
+    // Generate secure token
+    const token     = crypto.randomBytes(32).toString('hex');
+    const expiresAt = Math.floor(Date.now() / 1000) + 900; // 15 min
+
+    this.db.prepare(`
+      INSERT INTO magic_links (token, user_id, email, expires_at)
+      VALUES (?, ?, ?, ?)
+    `).run(token, user.id, email, expiresAt);
+
+    const magicLink = 
+      `${process.env.BACKEND_URL}/api/auth/magic/verify?token=${token}`;
     
-  return this.getMe(userId);
-};
+    await emailSvc.sendMagicLink(email, magicLink, user.name);
+    return { sent: true, message: 'Login link sent to your email' };
+  }
 
-function generateTokensForUser(dbConn, userId, userObj) {
-  const accessToken = signAccessToken(userObj);
-  const refreshToken = signRefreshToken({ id: userId });
-  
-  // Store refresh token (clean up old ones usually, but keeping simple here)
-  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-  dbConn.prepare('INSERT INTO refresh_tokens (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)')
-    .run(refreshToken, userId, expiresAt, Date.now());
+  verifyMagicLink(token) {
+    const now = Math.floor(Date.now() / 1000);
+    const link = this.db.prepare(`
+      SELECT * FROM magic_links
+      WHERE token = ? AND expires_at > ? AND used = 0
+    `).get(token, now);
 
-  return {
-    user: userObj,
-    accessToken,
-    refreshToken,
-    expiresIn: config.jwt.expiresIn
-  };
+    if (!link) {
+      const err = new Error('This link has expired or already been used');
+      err.code = 'UNAUTHORIZED'; throw err;
+    }
+
+    // Mark as used immediately (single use)
+    this.db.prepare(
+      'UPDATE magic_links SET used = 1 WHERE token = ?'
+    ).run(token);
+
+    const user = this.db.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).get(link.user_id);
+
+    // Update last_login
+    this.db.prepare(
+      'UPDATE users SET last_login = ? WHERE id = ?'
+    ).run(now, user.id);
+
+    const tokens = this._generateTokenPair(user.id, user.role);
+    return { user: this._safeUser(user), ...tokens };
+  }
+
+  // ─── AUTH 3: GOOGLE OAUTH ────────────────────────
+  // (Handled by passport strategy in passport.js)
+  // This method is called AFTER passport verifies Google token
+
+  handleGoogleUser(googleUser) {
+    const tokens = this._generateTokenPair(
+      googleUser.id, googleUser.role
+    );
+    return { user: this._safeUser(googleUser), ...tokens };
+  }
+
+  // ─── SHARED HELPERS ──────────────────────────────
+
+  getMe(userId) {
+    const user = this.db.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).get(userId);
+    if (!user) {
+      const err = new Error('User not found');
+      err.code = 'NOT_FOUND'; throw err;
+    }
+    return this._safeUser(user);
+  }
+
+  updateProfile(userId, { name, seat, language, accessibility }) {
+    const updates = [];
+    const values  = [];
+    if (name !== undefined)          { updates.push('name = ?');          values.push(name); }
+    if (seat !== undefined)          { updates.push('seat = ?');          values.push(seat); }
+    if (language !== undefined)      { updates.push('language = ?');      values.push(language); }
+    if (accessibility !== undefined) { updates.push('accessibility = ?'); values.push(accessibility ? 1 : 0); }
+    if (updates.length === 0) throw new Error('No fields to update');
+    values.push(userId);
+    this.db.prepare(
+      `UPDATE users SET ${updates.join(', ')} WHERE id = ?`
+    ).run(...values);
+    return this.getMe(userId);
+  }
 }
+
+module.exports = AuthService;
