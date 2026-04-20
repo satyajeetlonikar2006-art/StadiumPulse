@@ -1,7 +1,11 @@
 const http = require('http');
-const app = require('./app');
 const config = require('./config');
 const db = require('./config/database');
+
+// Initialize DB BEFORE loading app.js (which needs getDb() at load time)
+db.init();
+
+const app = require('./app');
 const wss = require('./websocket');
 const SimulationService = require('./services/simulation.service');
 
@@ -12,8 +16,6 @@ wss.init(server);
 
 const startServer = () => {
   try {
-    // Connect to DB and run migrations/seeds
-    db.init();
 
     // Start listening
     server.listen(config.port, () => {

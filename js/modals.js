@@ -16,6 +16,7 @@ const Modals = (() => {
         setupUpgrades();
         setupNotifications();
         setupMoreCards();
+        ARWayfinding.init();
     }
 
     function open(modalId) {
@@ -28,7 +29,12 @@ const Modals = (() => {
 
     function close(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.classList.add('hidden');
+        if (modal) {
+            modal.classList.add('hidden');
+            if (modalId === 'modal-ar') {
+                ARWayfinding.stop();
+            }
+        }
     }
 
     function setupCloseButtons() {
@@ -356,7 +362,10 @@ const Modals = (() => {
         document.getElementById('more-feedback')?.addEventListener('click', () => open('modal-feedback'));
         document.getElementById('more-leaderboard')?.addEventListener('click', () => open('modal-leaderboard'));
         document.getElementById('more-lost')?.addEventListener('click', () => open('modal-lost'));
-        document.getElementById('more-ar')?.addEventListener('click', () => open('modal-ar'));
+        document.getElementById('more-ar')?.addEventListener('click', () => {
+            open('modal-ar');
+            ARWayfinding.start();
+        });
         document.getElementById('more-share')?.addEventListener('click', () => open('modal-share'));
         document.getElementById('more-upgrade')?.addEventListener('click', () => open('modal-upgrade'));
     }

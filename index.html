@@ -123,6 +123,15 @@
                 <button class="nav-btn" id="btn-fast-forward" title="Fast Forward Simulation">
                     <i data-lucide="fast-forward" class="nav-icon-sm"></i>
                 </button>
+                <div id="nav-user-info" class="nav-user-info hidden">
+                    <span id="nav-user-name" class="nav-user-name"></span>
+                    <button class="logout-link" id="btn-logout" title="Logout">
+                        <i data-lucide="log-out" class="nav-icon-xs"></i>
+                    </button>
+                </div>
+                <a href="./user-panel.html" class="nav-btn nav-btn-accent" id="btn-user-panel" title="User Dashboard">
+                    <i data-lucide="user" class="nav-icon-sm"></i>
+                </a>
                 <button class="nav-btn nav-btn-accent" id="btn-notifications" title="Notifications">
                     <i data-lucide="bell" class="nav-icon-sm"></i>
                     <span class="notif-badge" id="notif-badge">0</span>
@@ -157,6 +166,10 @@
             <i data-lucide="grid-3x3" class="tab-icon"></i>
             <span>More</span>
         </button>
+        <a href="./user-panel.html" class="tab-btn-link" title="User Dashboard">
+            <i data-lucide="user-circle" class="tab-icon"></i>
+            <span>Profile</span>
+        </a>
     </div>
 
     <!-- ===================== MAIN CONTENT ===================== -->
@@ -778,20 +791,55 @@
 
     <!-- AR Wayfinding Modal -->
     <div class="modal-overlay hidden" id="modal-ar">
-        <div class="modal glass-card">
+        <div class="modal glass-card modal-lg ar-modal">
             <div class="modal-header">
                 <h3><i data-lucide="scan" class="card-icon"></i> AR Wayfinding</h3>
                 <button class="modal-close" data-close="modal-ar"><i data-lucide="x"></i></button>
             </div>
-            <div class="modal-body">
-                <div class="ar-placeholder">
-                    <div class="ar-camera-frame">
-                        <i data-lucide="camera" class="ar-cam-icon"></i>
-                        <div class="ar-scan-line"></div>
+            <div class="modal-body ar-body">
+                <div class="ar-container" id="ar-container">
+                    <video id="ar-video" autoplay playsinline muted></video>
+                    <canvas id="ar-canvas"></canvas>
+                    
+                    <div class="ar-hud">
+                        <div class="ar-scanning-overlay" id="ar-scanning">
+                            <div class="ar-scan-rect"></div>
+                            <p>Scanning environment...</p>
+                        </div>
+                        
+                        <div class="ar-controls hidden" id="ar-controls">
+                            <div class="destination-picker">
+                                <button class="dest-btn" data-dest="seat">
+                                    <i data-lucide="armchair"></i> My Seat
+                                </button>
+                                <button class="dest-btn" data-dest="exit">
+                                    <i data-lucide="log-out"></i> Exit
+                                </button>
+                                <button class="dest-btn" data-dest="food">
+                                    <i data-lucide="utensils"></i> Food
+                                </button>
+                                <button class="dest-btn" data-dest="restroom">
+                                    <i data-lucide="bath"></i> Restroom
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="ar-guidance hidden" id="ar-guidance">
+                            <div class="guidance-card glass-card">
+                                <i data-lucide="navigation" class="guidance-icon"></i>
+                                <div class="guidance-text">
+                                    <span id="guidance-main">Walking to Seat A12</span>
+                                    <span id="guidance-sub">Follow the green arrows (approx. 45m)</span>
+                                </div>
+                                <button class="btn-stop-ar" id="btn-stop-nav">Stop</button>
+                            </div>
+                        </div>
                     </div>
-                    <p class="ar-text">Point your camera at any sign in the stadium to get AR navigation directions.</p>
-                    <p class="ar-subtext">🚧 AR feature requires camera access — available in the StadiumPulse mobile app.</p>
-                    <button class="btn btn-primary" id="btn-ar-demo"><i data-lucide="play" class="btn-icon"></i> Watch Demo</button>
+                </div>
+                <div class="ar-fallback hidden" id="ar-fallback">
+                    <i data-lucide="camera-off" class="ar-cam-icon"></i>
+                    <p>Camera access is required for AR Wayfinding.</p>
+                    <button class="btn btn-primary" id="btn-request-ar">Enable Camera</button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -884,6 +932,7 @@
     <script src="js/modals.js"></script>
     <script src="js/chatbot.js"></script>
     <script src="js/live-data.js"></script>
+    <script src="js/ar-wayfinding.js"></script>
     <script src="js/app.js"></script>
     <!-- ===================== AUTH MODAL ===================== -->
     <div id="auth-overlay"

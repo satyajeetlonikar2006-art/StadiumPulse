@@ -231,8 +231,31 @@ async function authFetch(url, options = {}) {
     // We expect initApp/updateNavbarUser to be available, or we just rely on live-data.js
     if (typeof initApp === 'function') initApp();
     const user = getUser();
-    if (user && typeof updateNavbarUser === 'function') {
-      updateNavbarUser(user);
+    if (user) {
+        updateNavbarUser(user);
     }
+    
+    // Add logout listener
+    document.getElementById('btn-logout')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
   }
 })();
+
+function updateNavbarUser(user) {
+  const nameEl = document.getElementById('nav-user-name');
+  const infoEl = document.getElementById('nav-user-info');
+  if (nameEl && infoEl) {
+    if (user && user.name) {
+      nameEl.textContent = user.name;
+      infoEl.classList.remove('hidden');
+      // Refresh icons for logout button
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons({ nodes: [infoEl] });
+      }
+    } else {
+      infoEl.classList.add('hidden');
+    }
+  }
+}

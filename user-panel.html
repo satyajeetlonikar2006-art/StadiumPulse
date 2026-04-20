@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | StadiumPulse</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; min-height: 100vh; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .animate-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- React Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Firebase Setup
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+            console.warn("⚠️ Firebase keys are missing! Please update user-panel.html with your actual config.");
+        }
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+
+            useEffect(() => {
+                const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+                    if (firebaseUser) {
+                        setUser({
+                            name: firebaseUser.displayName,
+                            email: firebaseUser.email,
+                            photoURL: firebaseUser.photoURL,
+                            provider: 'Google'
+                        });
+                        setLoading(false);
+                    } else {
+                        // Fallback to local auth
+                        const localUserStr = localStorage.getItem('sp_user');
+                        if (localUserStr) {
+                            try {
+                                const localUser = JSON.parse(localUserStr);
+                                setUser({
+                                    name: localUser.name,
+                                    email: localUser.email,
+                                    photoURL: localUser.avatar || null,
+                                    provider: 'Stadium Account'
+                                });
+                            } catch (e) { setUser(null); }
+                        } else {
+                            setUser(null);
+                        }
+                        setLoading(false);
+                    }
+                    setTimeout(() => lucide.createIcons(), 100);
+                });
+                return () => unsubscribe();
+            }, []);
+
+            const handleSignIn = async () => {
+                setError(null);
+                setLoading(true);
+                try {
+                    await auth.signInWithPopup(googleProvider);
+                } catch (err) {
+                    setError("Google Sign-in failed. Check if Firebase is configured.");
+                    setLoading(false);
+                }
+            };
+
+            const handleLogout = async () => {
+                setLoading(true);
+                try { await auth.signOut(); } catch (e) {}
+                localStorage.removeItem('sp_user');
+                localStorage.removeItem('sp_token');
+                localStorage.removeItem('sp_refresh');
+                window.location.href = 'index.html';
+            };
+
+            if (loading) {
+                return (
+                    <div className="flex h-screen items-center justify-center">
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-slate-400 font-medium tracking-wide">Syncing Session...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4 sm:p-8">
+                    <div className="w-full max-w-md animate-in">
+                        {user ? (
+                            /* LOGGED IN VIEW */
+                            <div className="glass rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border border-white/10 transition-all hover:border-white/20">
+                                <div className="absolute top-0 right-0 p-4">
+                                    <button 
+                                        onClick={handleLogout} 
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all font-medium text-sm"
+                                    >
+                                        <i data-lucide="log-out" className="w-4 h-4"></i>
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+
+                                <div className="flex flex-col items-center mt-4">
+                                    <div className="relative mb-6">
+                                        {user.photoURL ? (
+                                            <img src={user.photoURL} alt="" className="w-24 h-24 rounded-full border-2 border-primary-500 p-1 object-cover shadow-xl" />
+                                        ) : (
+                                            <div className="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center text-3xl font-bold text-primary-400 border-2 border-primary-500/30">
+                                                {user.name.charAt(0)}
+                                            </div>
+                                        )}
+                                        <div className="absolute bottom-1 right-1 bg-green-500 w-5 h-5 rounded-full border-4 border-[#0f172a]"></div>
+                                    </div>
+
+                                    <h2 className="text-2xl font-bold text-white tracking-tight">{user.name}</h2>
+                                    <p className="text-slate-400 text-sm mt-1 flex items-center gap-2">
+                                        <i data-lucide="mail" className="w-3.5 h-3.5"></i> {user.email}
+                                    </p>
+                                    
+                                    <div className="mt-8 grid grid-cols-2 gap-4 w-full">
+                                        <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+                                            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Source</p>
+                                            <p className="text-sm font-semibold">{user.provider}</p>
+                                        </div>
+                                        <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+                                            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Status</p>
+                                            <p className="text-sm font-semibold text-green-400">Active</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-full mt-6 flex flex-col gap-3">
+                                        <button onClick={() => window.location.href='index.html'} className="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                                            <i data-lucide="home" className="w-4 h-4"></i> Enter Stadium
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            /* LOGGED OUT VIEW */
+                            <div className="glass rounded-[2rem] p-10 shadow-2xl text-center border border-white/10">
+                                <div className="w-20 h-20 bg-primary-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 transform -rotate-6">
+                                    <i data-lucide="shield-alert" className="w-10 h-10 text-primary-500"></i>
+                                </div>
+                                <h1 className="text-3xl font-black text-white mb-2">Login Required</h1>
+                                <p className="text-slate-400 text-sm leading-relaxed mb-10 max-w-[280px] mx-auto">
+                                    Please sign in to access your dashboard, rewards, and wayfinding.
+                                </p>
+                                
+                                {error && (
+                                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-xs font-medium">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <button onClick={handleSignIn} className="w-full py-4 bg-white hover:bg-slate-100 text-[#0f172a] font-bold rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-xl group">
+                                    <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                    </svg>
+                                    Sign In With Google
+                                </button>
+                                
+                                <p className="mt-8 text-[10px] uppercase tracking-[0.2em] font-black text-slate-600">
+                                    Secure Gateway v2.0
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

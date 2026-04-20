@@ -362,49 +362,186 @@
 .lang-option:hover { background: rgba(0, 212, 255, 0.06); color: var(--text-primary); }
 .lang-option.active { background: rgba(0, 212, 255, 0.12); color: var(--accent-blue); }
 
-/* AR Placeholder */
-.ar-placeholder {
+/* AR Wayfinding */
+.ar-modal .modal-body {
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 9/16;
+}
+
+.ar-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #000;
+}
+
+#ar-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#ar-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.ar-hud {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--space-lg);
+    pointer-events: none;
+}
+
+.ar-hud > * {
+    pointer-events: auto;
+}
+
+/* Scanning Overlay */
+.ar-scanning-overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-xl);
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 10;
 }
-.ar-camera-frame {
-    width: 200px;
-    height: 200px;
-    border: 2px dashed var(--accent-blue);
+
+.ar-scan-rect {
+    width: 240px;
+    height: 240px;
+    border: 2px solid var(--accent-blue);
     border-radius: var(--radius-lg);
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3), inset 0 0 30px rgba(0, 212, 255, 0.3);
+}
+
+.ar-scan-rect::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-blue);
+    box-shadow: 0 0 15px var(--accent-blue);
+    animation: scanLineMove 2s linear infinite;
+}
+
+@keyframes scanLineMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(240px); }
+}
+
+.ar-scanning-overlay p {
+    margin-top: var(--space-lg);
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-family: var(--font-display);
+    letter-spacing: 1px;
+}
+
+/* Controls & Destination Picker */
+.destination-picker {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    background: rgba(12, 21, 38, 0.85);
+    backdrop-filter: blur(12px);
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    animation: slideUp 0.3s ease;
+}
+
+.dest-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.dest-btn:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    transform: translateY(-2px);
+}
+
+.dest-btn svg { width: 24px; height: 24px; }
+
+/* Guidance HUD */
+.ar-guidance {
+    animation: slideUp 0.3s ease;
+}
+
+.guidance-card {
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    background: rgba(0, 212, 255, 0.03);
-}
-.ar-cam-icon { width: 48px; height: 48px; color: var(--text-muted); }
-.ar-scan-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
-    animation: scanMove 2s linear infinite;
-}
-@keyframes scanMove {
-    0% { top: 0; }
-    100% { top: 100%; }
-}
-.ar-text { text-align: center; font-size: 0.9rem; }
-.ar-subtext { text-align: center; font-size: 0.8rem; color: var(--text-muted); }
-
-/* Friend result */
-.friend-result {
+    gap: var(--space-md);
     padding: var(--space-md);
-    background: rgba(0, 255, 136, 0.06);
-    border: 1px solid rgba(0, 255, 136, 0.12);
-    border-radius: var(--radius-md);
-    text-align: center;
-    animation: fadeInTab 0.3s ease;
+    border: 1px solid var(--accent-green);
+}
+
+.guidance-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--accent-green);
+    animation: guidancePulse 2s infinite;
+}
+
+@keyframes guidancePulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.guidance-text { flex: 1; display: flex; flex-direction: column; }
+#guidance-main { font-weight: 700; color: #fff; font-size: 1rem; }
+#guidance-sub { font-size: 0.8rem; color: var(--text-secondary); }
+
+.btn-stop-ar {
+    padding: 6px 12px;
+    background: rgba(255, 59, 92, 0.2);
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Fallback */
+.ar-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    height: 100%;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .ar-modal .modal-body {
+        aspect-ratio: auto;
+        height: calc(100vh - 120px);
+    }
 }

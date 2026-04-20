@@ -20,9 +20,8 @@ class AuthService {
   }
 
   _generateTokenPair(userId, role) {
-    const accessToken = jwt.signToken(
-      { id: userId, role },
-      process.env.JWT_EXPIRES_IN || '24h'
+    const accessToken = jwt.signAccessToken(
+      { id: userId, role }
     );
     const refreshToken = crypto.randomBytes(40).toString('hex');
     const expiresAt = Math.floor(Date.now() / 1000) + 7 * 24 * 3600;
@@ -106,9 +105,8 @@ class AuthService {
       'SELECT * FROM users WHERE id = ?'
     ).get(record.user_id);
 
-    const accessToken = jwt.signToken(
-      { id: user.id, role: user.role },
-      process.env.JWT_EXPIRES_IN || '24h'
+    const accessToken = jwt.signAccessToken(
+      { id: user.id, role: user.role }
     );
     return { accessToken, expiresIn: 86400 };
   }

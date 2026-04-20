@@ -162,10 +162,8 @@
             });
         });
 
-        // AR demo button
-        document.getElementById('btn-ar-demo')?.addEventListener('click', () => {
-            UI.showToast('🎥 AR demo video would play here in the mobile app!', 'info');
-        });
+        // AR demo button has been replaced by functional AR logic
+
     }
 
     // ---- LANGUAGE ----
