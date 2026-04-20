@@ -175,12 +175,12 @@ router.get('/magic/verify', (req, res) => {
     const result = req.app.locals.authService.verifyMagicLink(token);
 
     // Redirect to frontend with token in URL params
-    const params = new URLSearchParams({
-      token:   result.accessToken,
-      refresh: result.refreshToken,
-      user:    JSON.stringify(result.user)
-    });
-    res.redirect(`${process.env.FRONTEND_URL}?${params.toString()}`);
+    // Dynamic redirect for mobile support
+    const origin = req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1')
+      ? 'http://localhost:3000'
+      : `http://${req.headers.host.split(':')[0]}:3000`;
+
+    res.redirect(`${origin}?${params.toString()}`);
 
   } catch (err) {
     res.redirect(
@@ -212,12 +212,16 @@ router.get('/google/callback',
       const result = req.app.locals.authService
         .handleGoogleUser(req.user);
 
+      const origin = req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1')
+        ? 'http://localhost:3000'
+        : `http://${req.headers.host.split(':')[0]}:3000`;
+
       const params = new URLSearchParams({
         token:   result.accessToken,
         refresh: result.refreshToken,
         user:    JSON.stringify(result.user)
       });
-      res.redirect(`${process.env.FRONTEND_URL}?${params.toString()}`);
+      res.redirect(`${origin}?${params.toString()}`);
     } catch (err) {
       res.redirect(
         `${process.env.FRONTEND_URL}?auth_error=server_error`

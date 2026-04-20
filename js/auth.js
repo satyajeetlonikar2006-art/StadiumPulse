@@ -3,6 +3,13 @@
 // ─── State ────────────────────────────────────────
 let _currentMode = 'login'; // 'login' | 'register'
 
+function getBaseUrl() {
+  const currentHost = window.location.hostname;
+  return (currentHost === 'localhost' || currentHost === '127.0.0.1')
+    ? 'http://localhost:5000'
+    : `http://${currentHost}:5000`;
+}
+
 // ─── Tab switching ────────────────────────────────
 function authTab(tab) {
   ['password', 'magic'].forEach(t => {
@@ -74,7 +81,7 @@ async function submitPassword() {
     // But the prompt says exactly `fetch(endpoint, ...)`
     // And earlier API_BASE in live-data.js was `http://localhost:5000/api`.
     // Let's use `http://localhost:5000` to be safe if no proxy exists.
-    const baseUrl = 'http://localhost:5000';
+    const baseUrl = getBaseUrl();
 
     const body = _currentMode === 'login'
       ? { email, password }
@@ -109,7 +116,7 @@ async function submitMagic() {
   const email = document.getElementById('magic-email').value.trim();
   if (!email) return;
 
-  const baseUrl = 'http://localhost:5000';
+  const baseUrl = getBaseUrl();
 
   try {
     const res = await fetch(baseUrl + '/api/auth/magic/send', {
@@ -146,7 +153,7 @@ function handleAuthSuccess({ accessToken, refreshToken, user }) {
 // ─── Logout ───────────────────────────────────────
 function logout() {
   const refresh = localStorage.getItem('sp_refresh');
-  const baseUrl = 'http://localhost:5000';
+  const baseUrl = getBaseUrl();
   if (refresh) {
     fetch(baseUrl + '/api/auth/logout', {
       method:  'POST',
@@ -179,7 +186,7 @@ async function authFetch(url, options = {}) {
   
   // If url is relative, ensure it uses baseUrl
   if (url.startsWith('/')) {
-      url = 'http://localhost:5000' + url;
+      url = getBaseUrl() + url;
   }
   
   const res = await fetch(url, {
