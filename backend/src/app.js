@@ -56,7 +56,11 @@ const db = require('./config/database').getDb();
 initPassport(db);
 app.locals.authService = new AuthService(db);
 
-// 8. Mount all routes
+// 8. Serve static frontend files (Unified App)
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../../')));
+
+// 9. Mount all routes
 app.use('/api', routes);
 
 // 9. Unknown Routes / 404 Handler

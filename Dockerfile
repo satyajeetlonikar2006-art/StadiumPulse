@@ -4,20 +4,19 @@ FROM node:18-alpine
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json to the working directory
-COPY package.json ./
-
-# Install the application dependencies
-RUN npm install
-
-# Copy the rest of the application code
+# Copy the entire project
 COPY . .
 
-# Set default port
-ENV PORT=3000
+# Install the backend dependencies
+WORKDIR /app/backend
+RUN npm install
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Set environment to production
+ENV NODE_ENV=production
 
-# Command to run the application
-CMD ["npm", "start"]
+# The port Cloud Run uses
+ENV PORT=8080
+EXPOSE 8080
+
+# Start unified backend
+CMD ["node", "src/server.js"]
