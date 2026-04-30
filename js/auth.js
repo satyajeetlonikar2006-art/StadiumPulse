@@ -4,10 +4,14 @@
 let _currentMode = 'login'; // 'login' | 'register'
 
 function getBaseUrl() {
-  const currentHost = window.location.hostname;
-  return (currentHost === 'localhost' || currentHost === '127.0.0.1')
-    ? 'http://localhost:5000'
-    : `http://${currentHost}:5000`;
+  // In the unified app, frontend is served by the backend on the same origin.
+  // Only use a separate backend URL when developing with VS Code Live Server (port 5500).
+  const port = window.location.port;
+  if (port === '5500' || port === '5501') {
+    return 'http://localhost:5000';
+  }
+  // Same origin — works for localhost:5000 dev AND Cloud Run production
+  return '';
 }
 
 // ─── Tab switching ────────────────────────────────
@@ -141,12 +145,13 @@ function handleAuthSuccess({ accessToken, refreshToken, user }) {
   localStorage.setItem('sp_token',   accessToken);
   localStorage.setItem('sp_refresh', refreshToken || '');
   localStorage.setItem('sp_user',    JSON.stringify(user));
-  document.getElementById('auth-overlay').style.display = 'none';
+  
+  const overlay = document.getElementById('auth-overlay');
+  if (overlay) overlay.style.display = 'none';
   
   if (typeof showToast === 'function') {
     showToast('Welcome, ' + user.name + '!', 'success');
   }
-  if (typeof initApp === 'function') initApp();
   if (typeof updateNavbarUser === 'function') updateNavbarUser(user);
 }
 
@@ -167,7 +172,9 @@ function logout() {
   localStorage.removeItem('sp_token');
   localStorage.removeItem('sp_refresh');
   localStorage.removeItem('sp_user');
-  document.getElementById('auth-overlay').style.display = 'flex';
+  
+  // Don't force redirect on index.html, just update UI
+  updateNavbarUser(null);
 }
 
 // ─── Get token for API calls ──────────────────────
@@ -199,54 +206,55 @@ async function authFetch(url, options = {}) {
   });
   // Auto-handle 401 — token expired
   if (res.status === 401) {
-    logout(); return null;
+    localStorage.removeItem('sp_token');
+    updateNavbarUser(null);
+    return null;
   }
   return res.json();
 }
 
 // ─── Auto-init on page load ───────────────────────
 (function init() {
-  // Handle redirect back from Google or magic link
-  const params = new URLSearchParams(window.location.search);
-  
-  if (params.get('token')) {
-    try {
-      handleAuthSuccess({
-        accessToken:  params.get('token'),
-        refreshToken: params.get('refresh'),
-        user: JSON.parse(decodeURIComponent(params.get('user')))
-      });
-      window.history.replaceState({}, document.title, '/');
-    } catch (e) {
-      console.error('Auth redirect parse error', e);
-    }
-    return;
-  }
-
-  if (params.get('auth_error')) {
-    showAuthError('Authentication failed: ' + params.get('auth_error'));
-    document.getElementById('auth-overlay').style.display = 'flex';
-    window.history.replaceState({}, document.title, '/');
-    return;
-  }
-
-  // Show modal if not logged in
-  const token = localStorage.getItem('sp_token');
-  if (!token) {
-    document.getElementById('auth-overlay').style.display = 'flex';
-  } else {
-    // We expect initApp/updateNavbarUser to be available, or we just rely on live-data.js
-    if (typeof initApp === 'function') initApp();
-    const user = getUser();
-    if (user) {
-        updateNavbarUser(user);
-    }
+  try {
+    // Handle redirect back from Google or magic link
+    const params = new URLSearchParams(window.location.search);
     
-    // Add logout listener
-    document.getElementById('btn-logout')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      logout();
-    });
+    if (params.get('token')) {
+      try {
+        handleAuthSuccess({
+          accessToken:  params.get('token'),
+          refreshToken: params.get('refresh'),
+          user: JSON.parse(decodeURIComponent(params.get('user')))
+        });
+        window.history.replaceState({}, document.title, '/');
+      } catch (e) {
+        console.error('Auth redirect parse error', e);
+      }
+      return;
+    }
+
+    if (params.get('auth_error')) {
+      console.warn('Authentication failed:', params.get('auth_error'));
+      window.history.replaceState({}, document.title, '/');
+      return;
+    }
+
+    // Update navbar if token exists
+    const token = localStorage.getItem('sp_token');
+    if (token) {
+      const user = getUser();
+      if (user) {
+          updateNavbarUser(user);
+      }
+      
+      // Add logout listener if button exists
+      document.getElementById('btn-logout')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+    }
+  } catch (err) {
+    console.error('Auth initialization error:', err);
   }
 })();
 

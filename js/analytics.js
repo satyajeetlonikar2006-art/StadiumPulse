@@ -14,6 +14,10 @@ const Analytics = (() => {
     }
 
     function initCharts() {
+        if (typeof Chart === 'undefined') {
+            console.error('[Analytics] Chart.js not found. Charts will not be rendered.');
+            return;
+        }
         createCrowdFlowChart();
         createZoneDistChart();
         createHeatmapHistoryChart();
@@ -148,12 +152,11 @@ const Analytics = (() => {
 
     function updateCrowdFlowChart() {
         if (!crowdFlowChart) return;
-        const total = SimEngine.getTotalAttendees();
-        crowdFlowData.push(total);
-        if (crowdFlowData.length > 60) crowdFlowData.shift();
+        const history = SimEngine.getHistory();
+        const last60 = history.slice(-60);
 
-        crowdFlowChart.data.labels = crowdFlowData.map((_, i) => i + ' min');
-        crowdFlowChart.data.datasets[0].data = crowdFlowData;
+        crowdFlowChart.data.labels = last60.map(h => h.minute + 'm');
+        crowdFlowChart.data.datasets[0].data = last60.map(h => h.total || 0);
         crowdFlowChart.update('none');
     }
 

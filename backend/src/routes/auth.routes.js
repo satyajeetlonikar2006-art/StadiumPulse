@@ -14,6 +14,13 @@ function getAuthService(req) {
   return req.app.locals.authService;
 }
 
+// Derive frontend URL from the request (unified app = same origin)
+function getFrontendUrl(req) {
+  return process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('loca.lt')
+    ? process.env.FRONTEND_URL
+    : `${req.protocol}://${req.get('host')}`;
+}
+
 // ─── VALIDATION CHAINS ────────────────────────────
 
 const registerValidation = [
@@ -149,8 +156,9 @@ router.post('/magic/send',
   [body('email').trim().isEmail().normalizeEmail()], validate,
   async (req, res, next) => {
     try {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
       const result = await getAuthService(req)
-        .sendMagicLink(req.body.email);
+        .sendMagicLink(req.body.email, baseUrl);
       res.json({ success: true, data: result });
     } catch (err) {
       if (err.code === 'SERVICE_UNAVAILABLE')
@@ -169,7 +177,7 @@ router.get('/magic/verify', (req, res) => {
   try {
     const { token } = req.query;
     if (!token) return res.redirect(
-      `${process.env.FRONTEND_URL}?auth_error=missing_token`
+      `${getFrontendUrl(req)}?auth_error=missing_token`
     );
 
     const result = req.app.locals.authService.verifyMagicLink(token);
@@ -180,11 +188,11 @@ router.get('/magic/verify', (req, res) => {
       refresh: result.refreshToken,
       user:    JSON.stringify(result.user)
     });
-    res.redirect(`${process.env.FRONTEND_URL}?${params.toString()}`);
+    res.redirect(`${getFrontendUrl(req)}?${params.toString()}`);
 
   } catch (err) {
     res.redirect(
-      `${process.env.FRONTEND_URL}?auth_error=link_expired`
+      `${getFrontendUrl(req)}?auth_error=link_expired`
     );
   }
 });
@@ -203,10 +211,12 @@ router.get('/google',
 // GET /api/auth/google/callback
 // Google redirects here after user approves
 router.get('/google/callback',
-  passport.authenticate('google', {
-    session: false,
-    failureRedirect: `${process.env.FRONTEND_URL}?auth_error=google_failed`
-  }),
+  (req, res, next) => {
+    passport.authenticate('google', {
+      session: false,
+      failureRedirect: `${getFrontendUrl(req)}?auth_error=google_failed`
+    })(req, res, next);
+  },
   (req, res) => {
     try {
       const result = req.app.locals.authService
@@ -217,10 +227,10 @@ router.get('/google/callback',
         refresh: result.refreshToken,
         user:    JSON.stringify(result.user)
       });
-      res.redirect(`${process.env.FRONTEND_URL}?${params.toString()}`);
+      res.redirect(`${getFrontendUrl(req)}?${params.toString()}`);
     } catch (err) {
       res.redirect(
-        `${process.env.FRONTEND_URL}?auth_error=server_error`
+        `${getFrontendUrl(req)}?auth_error=server_error`
       );
     }
   }

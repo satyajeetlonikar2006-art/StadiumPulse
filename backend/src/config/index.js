@@ -11,7 +11,9 @@ module.exports = {
     expiresIn: process.env.JWT_EXPIRES_IN || '1h',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d'
   },
-  corsOrigins: (process.env.CORS_ORIGINS || '').split(','),
+  corsOrigins: process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map(s => s.trim())
+    : true,  // Allow all origins if not configured (unified app = same origin)
   simulation: {
     tickRateMs: parseInt(process.env.SIMULATION_TICK_RATE_MS || '5000', 10)
   }

@@ -6,24 +6,33 @@ const Modals = (() => {
     let foodCart = [];
 
     function init() {
-        setupCloseButtons();
-        setupFoodModal();
-        setupLostFound();
-        setupShareLocation();
-        setupFeedback();
-        setupParking();
-        setupLeaderboard();
-        setupUpgrades();
-        setupNotifications();
-        setupMoreCards();
-        ARWayfinding.init();
+        const safeSetup = (name, fn) => {
+            try { fn(); } catch (e) { console.error(`[Modals] ${name} setup failed:`, e); }
+        };
+
+        safeSetup('MoreCards',     setupMoreCards);
+        safeSetup('CloseButtons',  setupCloseButtons);
+        safeSetup('FoodModal',     setupFoodModal);
+        safeSetup('LostFound',     setupLostFound);
+        safeSetup('ShareLocation', setupShareLocation);
+        safeSetup('Feedback',      setupFeedback);
+        safeSetup('Parking',       setupParking);
+        safeSetup('Leaderboard',   setupLeaderboard);
+        safeSetup('Upgrades',      setupUpgrades);
+        safeSetup('Notifications', setupNotifications);
+        
+        if (typeof ARWayfinding !== 'undefined') {
+            safeSetup('ARWayfinding', () => ARWayfinding.init());
+        }
     }
 
     function open(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.remove('hidden');
-            lucide.createIcons({ nodes: [modal] });
+            if (typeof lucide !== 'undefined') {
+                try { lucide.createIcons({ nodes: [modal] }); } catch (e) {}
+            }
         }
     }
 
@@ -364,7 +373,9 @@ const Modals = (() => {
         document.getElementById('more-lost')?.addEventListener('click', () => open('modal-lost'));
         document.getElementById('more-ar')?.addEventListener('click', () => {
             open('modal-ar');
-            ARWayfinding.start();
+            if (typeof ARWayfinding !== 'undefined' && typeof ARWayfinding.start === 'function') {
+                ARWayfinding.start();
+            }
         });
         document.getElementById('more-share')?.addEventListener('click', () => open('modal-share'));
         document.getElementById('more-upgrade')?.addEventListener('click', () => open('modal-upgrade'));

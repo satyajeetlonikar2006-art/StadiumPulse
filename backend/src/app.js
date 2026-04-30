@@ -16,6 +16,9 @@ const routes = require('./routes');
 
 const app = express();
 
+// Trust one proxy hop (Cloud Run's reverse proxy) so req.protocol / req.hostname are correct
+app.set('trust proxy', 1);
+
 // 1. Security Headers
 app.use(helmet());
 

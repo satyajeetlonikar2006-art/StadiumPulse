@@ -26,6 +26,13 @@ class MatchService {
       );
       const json = await res.json();
 
+      // If API key is invalid or usage limit exceeded
+      if (json.status === 'failure') {
+        console.warn('[MatchService] API key invalid or limit reached. Switching to simulation mode.');
+        this.enabled = false; // Disable for this session
+        return this._getSimulatedScore();
+      }
+
       if (json.status !== 'success' || !json.data) {
         throw new Error(json.status || 'API error');
       }

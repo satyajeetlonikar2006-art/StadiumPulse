@@ -25,9 +25,13 @@
             const fill = document.getElementById('loader-progress-fill');
             const status = document.getElementById('loader-status');
             let step = 0;
+            let sequenceResolved = false;
 
             function nextStep() {
+                if (sequenceResolved) return;
+                
                 if (step >= LOAD_STEPS.length) {
+                    sequenceResolved = true;
                     setTimeout(resolve, 400);
                     return;
                 }
@@ -37,6 +41,14 @@
                 step++;
                 setTimeout(nextStep, 280 + Math.random() * 220);
             }
+
+            // Final fallback resolve after 10s if the steps get stuck
+            setTimeout(() => {
+                if (!sequenceResolved) {
+                    sequenceResolved = true;
+                    resolve();
+                }
+            }, 10000);
 
             nextStep();
         });
@@ -50,40 +62,63 @@
     }
 
     // ---- INIT ----
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Run loading animation
-        await runLoadingSequence();
+    document.addEventListener('DOMContentLoaded', () => {
+        // Run loading animation (non-blocking)
+        runLoadingSequence().then(() => {
+            console.log('Loader animation complete');
+        });
 
-        // Initialize all modules
-        UI.init();
-        StadiumMap.init();
-        QueueTracker.init();
-        AdminPanel.init();
-        Analytics.init();
-        Planner.init();
-        Modals.init();
-        Chatbot.init();
-        LiveData.init();
+        // Fail-safe: dismiss loader after 5 seconds no matter what
+        const failSafeTimeout = setTimeout(() => {
+            console.warn('⚠️ Forced loader dismissal...');
+            dismissLoader();
+        }, 5000);
 
-        // Load saved preferences
-        loadPreferences();
+        try {
+            // Initialize all modules with individual safety
+            const safeInit = (name, fn) => {
+                try {
+                    fn();
+                } catch (e) {
+                    console.error(`[App] ${name} init failed:`, e);
+                }
+            };
 
-        // Setup navbar controls
-        setupNavbarControls();
+            safeInit('UI',          () => UI.init());
+            safeInit('StadiumMap',  () => StadiumMap.init());
+            safeInit('QueueTracker',() => QueueTracker.init());
+            safeInit('AdminPanel',  () => AdminPanel.init());
+            safeInit('Analytics',   () => Analytics.init());
+            safeInit('Planner',     () => Planner.init());
+            safeInit('Modals',      () => Modals.init());
+            safeInit('Chatbot',     () => Chatbot.init());
+            safeInit('LiveData',    () => LiveData.init());
 
-        // Subscribe to simulation updates
-        SimEngine.subscribe(onSimulationUpdate);
+            // Core features
+            safeInit('Prefs',       () => loadPreferences());
+            safeInit('Navbar',      () => setupNavbarControls());
+            
+            // Simulation
+            try {
+                SimEngine.subscribe(onSimulationUpdate);
+                SimEngine.start();
+            } catch (e) { console.error('[App] SimEngine failed:', e); }
 
-        // Start simulation
-        SimEngine.start();
+            // Lucide
+            if (typeof lucide !== 'undefined') {
+                try { lucide.createIcons(); } catch (e) {}
+            }
 
-        // Initialize Lucide icons
-        lucide.createIcons();
+            // If we got here fast, clear fail-safe and dismiss
+            clearTimeout(failSafeTimeout);
+            dismissLoader();
+            console.log('🏟️ StadiumPulse initialized successfully!');
 
-        // Dismiss loading screen
-        dismissLoader();
-
-        console.log('🏟️ StadiumPulse initialized successfully!');
+        } catch (err) {
+            console.error('❌ Critical initialization error:', err);
+            clearTimeout(failSafeTimeout);
+            dismissLoader();
+        }
     });
 
     // ---- SIMULATION UPDATE HANDLER ----

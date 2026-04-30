@@ -64,7 +64,11 @@ const SimEngine = (() => {
         // Record history
         const hist = {};
         ZONES.forEach(z => { hist[z.id] = getDensity(z.id); });
-        historyLog.push({ minute: phaseMinute, data: hist });
+        historyLog.push({ 
+            minute: phaseMinute, 
+            data: hist,
+            total: getTotalAttendees()
+        });
         if (historyLog.length > 360) historyLog.shift(); // Keep ~60 min
         notify();
     }

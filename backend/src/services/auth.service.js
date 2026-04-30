@@ -119,7 +119,7 @@ class AuthService {
 
   // ─── AUTH 2: MAGIC LINK ──────────────────────────
 
-  async sendMagicLink(email) {
+  async sendMagicLink(email, baseUrl = null) {
     if (!emailSvc.isAvailable()) {
       const err = new Error(
         'Magic link is not configured on this server'
@@ -167,8 +167,9 @@ class AuthService {
       VALUES (?, ?, ?, ?)
     `).run(token, user.id, email, expiresAt);
 
+    const effectiveBase = baseUrl || process.env.BACKEND_URL || '';
     const magicLink = 
-      `${process.env.BACKEND_URL}/api/auth/magic/verify?token=${token}`;
+      `${effectiveBase}/api/auth/magic/verify?token=${token}`;
     
     await emailSvc.sendMagicLink(email, magicLink, user.name);
     return { sent: true, message: 'Login link sent to your email' };

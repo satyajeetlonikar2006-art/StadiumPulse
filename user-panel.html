@@ -76,7 +76,12 @@
             const [error, setError] = useState(null);
 
             useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+                let resolved = false;
+
+                const resolveSession = (firebaseUser) => {
+                    if (resolved) return;
+                    resolved = true;
+                    
                     if (firebaseUser) {
                         setUser({
                             name: firebaseUser.displayName,
@@ -84,7 +89,6 @@
                             photoURL: firebaseUser.photoURL,
                             provider: 'Google'
                         });
-                        setLoading(false);
                     } else {
                         // Fallback to local auth
                         const localUserStr = localStorage.getItem('sp_user');
@@ -101,11 +105,26 @@
                         } else {
                             setUser(null);
                         }
-                        setLoading(false);
                     }
+                    setLoading(false);
                     setTimeout(() => lucide.createIcons(), 100);
-                });
-                return () => unsubscribe();
+                };
+
+                // Firebase listener
+                const unsubscribe = auth.onAuthStateChanged(resolveSession);
+
+                // Fail-safe: Resolve using local storage if Firebase takes too long or fails
+                const timer = setTimeout(() => {
+                    if (!resolved) {
+                        console.warn("Session sync timeout — using local state");
+                        resolveSession(null); 
+                    }
+                }, 800); // Shorter timeout for better UX
+
+                return () => {
+                    unsubscribe();
+                    clearTimeout(timer);
+                };
             }, []);
 
             const handleSignIn = async () => {

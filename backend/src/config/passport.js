@@ -11,7 +11,8 @@ module.exports = function initPassport(db) {
     {
       clientID:     process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL:  process.env.BACKEND_URL + '/api/auth/google/callback',
+      callbackURL:  '/api/auth/google/callback',
+      proxy:        true,
       scope:        ['profile', 'email']
     },
     async (accessToken, refreshToken, profile, done) => {

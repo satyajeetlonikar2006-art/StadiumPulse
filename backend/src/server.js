@@ -18,7 +18,7 @@ const startServer = () => {
   try {
 
     // Start listening
-    server.listen(config.port, () => {
+    server.listen(config.port, '0.0.0.0', () => {
       console.log(`🚀 StadiumPulse HTTP Server running on port ${config.port} in ${config.env} mode`);
       console.log(`🔌 WebSocket server attached to same port (or ${config.wsPort})`);
       console.log(`💾 Database connected at ${config.dbPath}`);

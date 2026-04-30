@@ -121,14 +121,21 @@ const ARWayfinding = (() => {
         currentDest = DESTINATIONS[destId];
         isNavigating = true;
         
-        document.getElementById('ar-controls').classList.add('hidden');
+        const controls = document.getElementById('ar-controls');
+        if (controls) controls.classList.add('hidden');
+        
         const guidance = document.getElementById('ar-guidance');
-        guidance.classList.remove('hidden');
+        if (guidance) {
+            guidance.classList.remove('hidden');
+            const main = document.getElementById('guidance-main');
+            const sub = document.getElementById('guidance-sub');
+            if (main) main.textContent = `Navigate to ${currentDest.name}`;
+            if (sub) sub.textContent = `Follow the ${destId === 'exit' ? 'red' : 'green'} arrows`;
+        }
         
-        document.getElementById('guidance-main').textContent = `Navigate to ${currentDest.name}`;
-        document.getElementById('guidance-sub').textContent = `Follow the ${destId === 'exit' ? 'red' : 'green'} arrows`;
-        
-        UI.showToast(`Navigation started to ${currentDest.name}`, 'success');
+        if (typeof UI !== 'undefined' && typeof UI.showToast === 'function') {
+            UI.showToast(`Navigation started to ${currentDest.name}`, 'success');
+        }
     }
 
     function stopNavigation() {

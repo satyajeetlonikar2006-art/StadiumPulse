@@ -5,7 +5,7 @@
 .loading-screen {
     position: fixed;
     inset: 0;
-    z-index: 99999;
+    z-index: 9000; /* Lower than auth-overlay (10000) */
     display: flex;
     align-items: center;
     justify-content: center;

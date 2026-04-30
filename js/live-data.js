@@ -6,7 +6,9 @@
 const LiveData = (() => {
     'use strict';
 
-    const API_BASE = 'http://localhost:5000/api';
+    const API_BASE = window.location.port === '5500' || window.location.port === '5501'
+        ? 'http://localhost:5000/api'
+        : '/api';
     let ws = null;
 
     function init() {
@@ -19,7 +21,7 @@ const LiveData = (() => {
     async function fetchLiveWeather() {
         try {
             const json = await authFetch(`${API_BASE}/weather?city=Mumbai`);
-            if (!json || !json.success) return;
+            if (!json || !json.success || !json.data) return;
             const w = json.data;
             updateWeatherWidget(w);
         } catch (err) {
@@ -65,7 +67,7 @@ const LiveData = (() => {
                             lng: pos.coords.longitude
                         })
                     });
-                    if (!json || !json.success) return;
+                    if (!json || !json.success || !json.data) return;
                     const { stadium } = json.data;
 
                     if (stadium) {
@@ -98,7 +100,11 @@ const LiveData = (() => {
     // ---- FEATURE 3 & 4: WEBSOCKET LIVE UPDATES ----
     function connectWebSocket() {
         try {
-            const wsUrl = `ws://localhost:5000?token=` + getToken();
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsHost = (window.location.port === '5500' || window.location.port === '5501')
+                ? 'localhost:5000'
+                : window.location.host;
+            const wsUrl = `${wsProtocol}//${wsHost}?token=` + getToken();
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {

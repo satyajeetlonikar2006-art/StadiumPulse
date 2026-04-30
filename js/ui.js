@@ -116,8 +116,9 @@ const UI = (() => {
     // ---- QUICK ACTIONS ----
     function setupQuickActions() {
         document.getElementById('btn-nearby')?.addEventListener('click', () => {
-            const block = document.getElementById('seat-block').value || 'A';
-            Modals.showNearby(block);
+            const blockEl = document.getElementById('seat-block');
+            const block = blockEl ? blockEl.value : 'A';
+            Modals.showNearby(block || 'A');
         });
         document.getElementById('btn-food-order')?.addEventListener('click', () => Modals.open('modal-food'));
         document.getElementById('btn-share-location')?.addEventListener('click', () => Modals.open('modal-share'));
