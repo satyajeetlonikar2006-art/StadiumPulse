@@ -279,6 +279,12 @@ async function authFetch(url, options = {}) {
       const overlay = document.getElementById('auth-overlay');
       if (overlay) overlay.classList.add('hidden');
     });
+
+    // Splash screen buttons
+    document.getElementById('btn-login-google-splash')?.addEventListener('click', () => {
+      console.log('Google login triggered from splash screen');
+      loginWithGoogle();
+    });
   } catch (err) {
     console.error('Auth initialization error:', err);
   }

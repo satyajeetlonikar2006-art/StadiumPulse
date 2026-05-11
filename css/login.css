@@ -31,9 +31,10 @@
     max-width: 440px;
     padding: var(--space-xl);
     text-align: center;
-    z-index: 2;
+    z-index: 10001; /* Above almost everything */
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    pointer-events: auto; /* Ensure clickable */
 }
 
 .login-logo {
