@@ -230,7 +230,7 @@ async function authFetch(url, options = {}) {
         handleAuthSuccess({
           accessToken:  params.get('token'),
           refreshToken: params.get('refresh'),
-          user: JSON.parse(decodeURIComponent(params.get('user')))
+          user: JSON.parse(params.get('user'))
         });
         window.history.replaceState({}, document.title, '/');
       } catch (e) {
