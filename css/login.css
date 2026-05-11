@@ -1,0 +1,166 @@
+/* ========================================
+   StadiumPulse — Mandatory Login Screen
+   ======================================== */
+
+.login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0e1a;
+    overflow: hidden;
+}
+
+.login-bg-video {
+    position: absolute;
+    inset: 0;
+    background: url('https://images.unsplash.com/photo-1540747913346-19e3adbb17c3?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+    filter: brightness(0.3) saturate(1.2);
+}
+
+.login-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 0%, #0a0e1a 100%);
+}
+
+.login-content {
+    width: 100%;
+    max-width: 440px;
+    padding: var(--space-xl);
+    text-align: center;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-lg);
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+}
+
+.login-logo svg {
+    width: 32px;
+    height: 32px;
+    color: #fff;
+}
+
+.login-header h2 {
+    font-size: 1.8rem;
+    font-family: var(--font-display);
+    margin-bottom: 8px;
+    background: linear-gradient(to right, #fff, #8b92a8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-header p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-xl);
+}
+
+.login-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.btn-google-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    color: #0a0e1a;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all var(--transition-normal);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-google-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+    background: #f1f5f9;
+}
+
+.btn-google-large svg {
+    width: 22px;
+    height: 22px;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin: 12px 0;
+}
+
+.login-divider::before, .login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-email-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+}
+
+.btn-email-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.btn-email-link svg {
+    width: 18px;
+    height: 18px;
+}
+
+.login-footer {
+    margin-top: var(--space-xl);
+}
+
+.login-footer p {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.login-screen.fade-out {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}

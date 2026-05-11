@@ -57,6 +57,21 @@
     function dismissLoader() {
         const loader = document.getElementById('loading-screen');
         if (!loader) return;
+        
+        // If user is not logged in, show the login screen instead of the app
+        const token = localStorage.getItem('sp_token');
+        if (!token) {
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) {
+                loginScreen.classList.remove('hidden');
+                // Refresh icons on login screen
+                if (typeof lucide !== 'undefined') lucide.createIcons({ nodes: [loginScreen] });
+            }
+            loader.classList.add('fade-out');
+            setTimeout(() => loader.remove(), 900);
+            return;
+        }
+
         loader.classList.add('fade-out');
         setTimeout(() => loader.remove(), 900);
     }

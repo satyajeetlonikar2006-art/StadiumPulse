@@ -5,9 +5,9 @@ let _currentMode = 'login'; // 'login' | 'register'
 
 function getBaseUrl() {
   // In the unified app, frontend is served by the backend on the same origin.
-  // Only use a separate backend URL when developing with VS Code Live Server (port 5500).
+  // Use separate backend URL when developing with local dev servers (3000, 5500, etc.)
   const port = window.location.port;
-  if (port === '5500' || port === '5501') {
+  if (port === '3000' || port === '5500' || port === '5501') {
     return 'http://localhost:5000';
   }
   // Same origin — works for localhost:5000 dev AND Cloud Run production
@@ -147,7 +147,13 @@ function handleAuthSuccess({ accessToken, refreshToken, user }) {
   localStorage.setItem('sp_user',    JSON.stringify(user));
   
   const overlay = document.getElementById('auth-overlay');
-  if (overlay) overlay.style.display = 'none';
+  if (overlay) overlay.classList.add('hidden');
+
+  const loginScreen = document.getElementById('login-screen');
+  if (loginScreen) {
+    loginScreen.classList.add('fade-out');
+    setTimeout(() => loginScreen.remove(), 900);
+  }
   
   if (typeof showToast === 'function') {
     showToast('Welcome, ' + user.name + '!', 'success');
@@ -173,8 +179,8 @@ function logout() {
   localStorage.removeItem('sp_refresh');
   localStorage.removeItem('sp_user');
   
-  // Don't force redirect on index.html, just update UI
-  updateNavbarUser(null);
+  // Refresh to show the mandatory login screen again
+  window.location.reload();
 }
 
 // ─── Get token for API calls ──────────────────────
@@ -246,31 +252,64 @@ async function authFetch(url, options = {}) {
       if (user) {
           updateNavbarUser(user);
       }
-      
-      // Add logout listener if button exists
-      document.getElementById('btn-logout')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        logout();
-      });
     }
+      
+    // Always add logout listener
+    document.getElementById('btn-logout')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+
+    document.getElementById('atab-password')?.addEventListener('click', () => authTab('password'));
+    document.getElementById('atab-magic')?.addEventListener('click', () => authTab('magic'));
+    document.getElementById('amode-login')?.addEventListener('click', (e) => { e.preventDefault(); authMode('login'); });
+    document.getElementById('amode-register')?.addEventListener('click', (e) => { e.preventDefault(); authMode('register'); });
+    
+    document.getElementById('auth-submit-btn')?.addEventListener('click', () => {
+      const isPassword = document.getElementById('auth-form-password').style.display !== 'none';
+      if (isPassword) submitPassword();
+      else submitMagic();
+    });
+
+    document.getElementById('btn-login-trigger')?.addEventListener('click', () => {
+      const overlay = document.getElementById('auth-overlay');
+      if (overlay) overlay.classList.remove('hidden');
+    });
+    document.getElementById('close-auth')?.addEventListener('click', () => {
+      const overlay = document.getElementById('auth-overlay');
+      if (overlay) overlay.classList.add('hidden');
+    });
   } catch (err) {
     console.error('Auth initialization error:', err);
   }
 })();
 
+function loginWithGoogle() {
+  window.location.href = `${getBaseUrl()}/api/auth/google`;
+}
+
+function showAuthOverlay() {
+  const overlay = document.getElementById('auth-overlay');
+  if (overlay) overlay.classList.remove('hidden');
+}
+
 function updateNavbarUser(user) {
   const nameEl = document.getElementById('nav-user-name');
   const infoEl = document.getElementById('nav-user-info');
+  const loginBtn = document.getElementById('btn-login-trigger');
+  
   if (nameEl && infoEl) {
     if (user && user.name) {
       nameEl.textContent = user.name;
       infoEl.classList.remove('hidden');
+      if (loginBtn) loginBtn.classList.add('hidden');
       // Refresh icons for logout button
       if (typeof lucide !== 'undefined') {
         lucide.createIcons({ nodes: [infoEl] });
       }
     } else {
       infoEl.classList.add('hidden');
+      if (loginBtn) loginBtn.classList.remove('hidden');
     }
   }
 }

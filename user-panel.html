@@ -127,15 +127,9 @@
                 };
             }, []);
 
-            const handleSignIn = async () => {
-                setError(null);
-                setLoading(true);
-                try {
-                    await auth.signInWithPopup(googleProvider);
-                } catch (err) {
-                    setError("Google Sign-in failed. Check if Firebase is configured.");
-                    setLoading(false);
-                }
+            const handleSignIn = () => {
+                const baseUrl = window.location.port === '3000' ? 'http://localhost:5000' : '';
+                window.location.href = baseUrl + '/api/auth/google';
             };
 
             const handleLogout = async () => {
