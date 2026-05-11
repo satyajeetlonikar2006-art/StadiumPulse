@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20-bullseye
 
 # Set the working directory
 WORKDIR /app
