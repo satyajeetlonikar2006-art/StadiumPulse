@@ -7,8 +7,8 @@ function getBaseUrl() {
   // In the unified app, frontend is served by the backend on the same origin.
   // Use separate backend URL when developing with local dev servers (3000, 5500, etc.)
   const port = window.location.port;
-  if (port === '3000' || port === '5500' || port === '5501') {
-    return 'http://localhost:5000';
+  if (port === '3000' || port === '5000' || port === '5500' || port === '5501') {
+    return 'http://localhost:8080';
   }
   // Same origin — works for localhost:5000 dev AND Cloud Run production
   return '';
