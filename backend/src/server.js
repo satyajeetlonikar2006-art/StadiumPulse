@@ -57,4 +57,14 @@ const gracefulShutdown = () => {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
+process.on('uncaughtException', (err) => {
+  console.error('💥 UNCAUGHT EXCEPTION! Shutting down...', err.name, err.message, err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('💥 UNHANDLED REJECTION! Shutting down...', err.name, err.message, err.stack);
+  process.exit(1);
+});
+
 startServer();

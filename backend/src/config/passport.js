@@ -7,6 +7,11 @@ const bcrypt         = require('bcryptjs');
 
 module.exports = function initPassport(db) {
 
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    console.warn('⚠️ Google OAuth credentials missing. Google login will be disabled.');
+    return passport;
+  }
+
   passport.use(new GoogleStrategy(
     {
       clientID:     process.env.GOOGLE_CLIENT_ID,
