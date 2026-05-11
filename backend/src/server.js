@@ -1,27 +1,31 @@
 const http = require('http');
 const config = require('./config');
 const db = require('./config/database');
-
-// Initialize DB BEFORE loading app.js (which needs getDb() at load time)
-db.init();
-
-const app = require('./app');
-const wss = require('./websocket');
 const SimulationService = require('./services/simulation.service');
 
-const server = http.createServer(app);
-
-// Attach websocket to same server
-wss.init(server);
+const server = http.createServer();
 
 const startServer = () => {
   try {
+    console.log('🏁 Starting StadiumPulse Server...');
+    
+    // Initialize DB
+    db.init();
+    
+    // Load app and websocket after DB is ready
+    const app = require('./app');
+    const wss = require('./websocket');
+    
+    server.on('request', app);
+    
+    // Attach websocket to same server
+    wss.init(server);
 
     // Start listening
     const port = process.env.PORT || 8080;
     server.listen(port, '0.0.0.0', () => {
       console.log(`🚀 StadiumPulse HTTP Server running on port ${port} in ${config.env} mode`);
-      console.log(`🔌 WebSocket server attached to same port (or ${config.wsPort})`);
+      console.log(`🔌 WebSocket server attached to same port`);
       console.log(`💾 Database connected at ${config.dbPath}`);
       
       // Initialize core simulation service for active event
@@ -31,10 +35,11 @@ const startServer = () => {
       }
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('💥 Failed to start server:', error);
     process.exit(1);
   }
 };
+
 
 const gracefulShutdown = () => {
   console.log('SIGTERM/SIGINT received. Shutting down gracefully...');
